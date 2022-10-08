@@ -19,6 +19,5 @@
       "module": "CommonJS"
     }
   },
-  "include": ["src"],
-  "exclude": []
+  "include": ["src"]
 }

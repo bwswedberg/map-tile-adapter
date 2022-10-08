@@ -1,8 +1,3 @@
-import proj4 from 'proj4';
-
-const mercatorProj = proj4('EPSG:3857', 'EPSG:4326');
-export const mercatorToLngLat = (lngLat: number[]) => mercatorProj.forward(lngLat);
-
 export const createCanvasContext = (width: number, height: number) => {
   const canvas = document.createElement('canvas');
   canvas.width = width;
@@ -13,11 +8,15 @@ export const createCanvasContext = (width: number, height: number) => {
 export const canvasContextToArrayBuffer = async (
   canvasContext: CanvasRenderingContext2D
 ): Promise<ArrayBuffer | null> => {
-  return await new Promise((resolve) => {
+  return await new Promise((resolve, reject) => {
     canvasContext.canvas.toBlob(async blob => {
       if (!blob) return resolve(null);
-      const buf = await blob.arrayBuffer();
-      resolve(buf);
+      try {
+        const buf = await blob.arrayBuffer();
+        resolve(buf);
+      } catch (error) {
+        reject(error)
+      }
     });
   });
-}
+};

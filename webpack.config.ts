@@ -54,7 +54,7 @@ const config = {
     library: "maplibreglWgs84RasterProtocol",
   },
   devServer: {
-    static: path.join(__dirname, "dev"),
+    static: path.join(__dirname, "demo"),
     compress: true,
     port: 3000,
     hot: true,

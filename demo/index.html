@@ -58,9 +58,17 @@
         style: {
           version: 8,
           sources: {
+            'basic4326-256-local': {
+              type: 'raster',
+              tiles: ['reprj://bbox={bbox-epsg-3857}&z={z}&x={x}&y={y}://http://localhost:3000/tiles/epsg4326/{z-epsg-4326}/{x-epsg-4326}/{y-epsg-4326}.png'],
+              tileSize: 256,
+              minzoom: 1,
+              maxzoom: 3,
+              scheme: 'xyz'
+            },
             'basic4326-256': {
               type: 'raster',
-              tiles: ['reprj://bbox={bbox-epsg-3857}://https://api.maptiler.com/maps/basic-4326/256/{z-epsg-4326}/{x-epsg-4326}/{y-epsg-4326}.png?key=bS8WSqUoVgfQRrMrQuvE'],
+              tiles: ['reprj://bbox={bbox-epsg-3857}&z={z}&x={x}&y={y}://https://api.maptiler.com/maps/basic-4326/256/{z-epsg-4326}/{x-epsg-4326}/{y-epsg-4326}.png?key=bS8WSqUoVgfQRrMrQuvE'],
               tileSize: 256,
               scheme: 'xyz'
             },
@@ -98,9 +106,11 @@
       };
 
       var checkboxes = document.getElementsByClassName('layerCheckbox');
+
       for (var i = 0; i < checkboxes.length; i++) {
         checkboxes[i].addEventListener('change', handleLayerCheckboxChange);
       }
+
     </script>
   </body>
 </html>

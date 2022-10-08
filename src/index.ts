@@ -1,8 +1,9 @@
 import { Cancelable, RequestParameters, ResponseCallback } from "maplibre-gl";
 import LruCache from 'lru-cache';
-import { ReprojConfig, ReprojContext, Tile } from "./types";
-import { createReprojRequest, fetchTiles } from "./request";
-import { reprojectTiles } from "./project";
+import { ReprojConfig, ReprojContext } from "./types";
+import { getSourceTile } from "./request";
+import { parseTileRequestParams } from "./params"
+import { drawTile } from "./draw";
 
 export const REPROJECTED_PROTOCOL = 'reprj';
 
@@ -20,7 +21,7 @@ export const reprojectedProtocol = (config: Partial<ReprojConfig> = {}) => {
     ...defaultConfig,
     ...config
   };
-  const cache = new LruCache<string, Promise<{ tile: Tile, image: HTMLImageElement }>>({
+  const cache = new LruCache<string, Promise<HTMLImageElement>>({
     max: props.cacheSize,
   });
   const ctx: ReprojContext = { props, cache };
@@ -32,23 +33,43 @@ const loadFn = (
   reqParams: RequestParameters, 
   cb: ResponseCallback<any>
 ): Cancelable => {
-  const request = createReprojRequest(ctx, reqParams.url);
+  const request = parseTileRequestParams(ctx, reqParams.url);
   let isCanceled = false;
+
   Promise.resolve()
     .then(async () => {
+      // Bail if canceled 
       if (isCanceled) return cb(null, null);
-      const tiles = await fetchTiles(ctx, request);
-      if (isCanceled) return cb(null, null);
-      if (!tiles?.length) return cb(null, null);
-      const img = await reprojectTiles(ctx, request, tiles);
+
+      // Get all source tiles required to reproject
+      const tiles = await Promise.all(
+        request.wgs84Tiles.map(tile => 
+          getSourceTile(request.urlTemplate, tile, request.lngLatBbox, ctx.cache)
+            .then(image => ({ tile, image }))
+      ));
+
+      // Bail if canceled or no tiles found
+      if (isCanceled || !tiles?.length) return cb(null, null);
+
+      // Create new tile image from source tiles
+      const img = await drawTile(
+        ctx.props.method,
+        ctx.props.tileSize,
+        tiles,
+        request.mercatorBbox,
+        request.lngLatBbox
+      );
+
       cb(null, img);
     })
     .catch(err => {
       const error = err instanceof Error ? err : new Error(err);
       cb(error);
     });
-  const cancel = () => {
-    isCanceled = true;
+
+  return { 
+    cancel: () => {
+      isCanceled = true
+    }
   };
-  return { cancel };
 };

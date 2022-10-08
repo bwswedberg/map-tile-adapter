@@ -1,4 +1,4 @@
-import LruCache from 'lru-cache';
+import type LruCache from 'lru-cache';
 
 /**
  * [x, y, z]
@@ -19,15 +19,6 @@ export interface ReprojConfig {
   cacheSize: number 
 }
 
-// export interface ReprojectedProtocolContext {
-//   mercatorTile: Tile;
-//   mercatorBbox: Bbox;
-//   wgs84Tiles: Tile[];
-//   lngLatBbox: Bbox;
-//   urlTemplate: string;
-//   config: ReprojectedProtocolConfig;
-// }
-
 export type ReprojRequest = {
   mercatorTile: Tile;
   mercatorBbox: Bbox;
@@ -35,6 +26,8 @@ export type ReprojRequest = {
   lngLatBbox: Bbox;
   urlTemplate: string;
 };
+
+export type ReprojSourceTileCache = LruCache<string, Promise<HTMLImageElement>>
 
 export type ReprojContext = {
   props: {
@@ -45,11 +38,12 @@ export type ReprojContext = {
     method: 'splice' | 'resample';
     cacheSize: number;
   };
-  cache: LruCache<string, Promise<{ tile: Tile, image: HTMLImageElement }>>;
+  cache: ReprojSourceTileCache;
 };
 
 export type ReprojectionMethod = (
-  ctx: ReprojContext, 
-  request: ReprojRequest,
-  sources: { tile: Tile, image: HTMLImageElement }[]
+  tileSize: number,
+  sources: { tile: Tile, image: HTMLImageElement }[],
+  mercatorBbox: Bbox,
+  lngLatBbox: Bbox
 ) => Promise<ArrayBuffer | null>
