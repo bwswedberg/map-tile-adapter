@@ -1,16 +1,15 @@
 import { Bbox, Tile } from "../types";
-import { resampleTiles } from "./resample";
+import { resampleTiles } from "./resample2";
 import { spliceTiles } from "./splice";
 
 export const drawTile = async (
   method: string,
   tileSize: number,
   sources: { tile: Tile, image: HTMLImageElement }[],
-  mercatorBbox: Bbox,
-  lngLatBbox: Bbox
+  mercatorBbox: Bbox
 ) => {
   if (method === 'resample') {
-    return await resampleTiles(tileSize, sources, mercatorBbox, lngLatBbox);
+    return await resampleTiles(tileSize, sources, mercatorBbox);
   }
-  return await spliceTiles(tileSize, sources, mercatorBbox, lngLatBbox);
+  return await spliceTiles(tileSize, sources, mercatorBbox);
 }

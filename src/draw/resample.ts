@@ -1,49 +1,31 @@
 import * as tilebelt from 'tilebelt-wgs84';
 import { ReprojectionMethod } from "../types";
-import { mercatorToLngLat } from '../proj';
-import { canvasContextToArrayBuffer, createCanvasContext } from "./common";
+import { mercatorBboxToLngLatBbox, mercatorToLngLat } from '../proj';
+import { canvasContextToArrayBuffer, createCanvasContext, drawSourceCanvas } from "./common";
 
-export const resampleTiles: ReprojectionMethod = async (tileSize, tiles, mercatorBbox, lngLatBbox) => {
-  const sTileBbox = [
-    Math.min(...tiles.map(d => d.tile[0])),
-    Math.min(...tiles.map(d => d.tile[1])),
-    Math.max(...tiles.map(d => d.tile[0])),
-    Math.max(...tiles.map(d => d.tile[1])),
-  ];
-  const mercatorCanvas = createCanvasContext(tileSize, tileSize);
-  const sTileZoom = tiles[0].tile[2]; // Use first tile zoom
+export const resampleTiles: ReprojectionMethod = async (tileSize, sources, mercatorBbox) => {
+  const wgs84Canvas = drawSourceCanvas(sources, tileSize);
+
+  // The source tile canvas offset since wgsCanvas origin is the most nw tile
+  const sxOffset = Math.min(...sources.map(d => d.tile[0])) * tileSize;
+  const syOffset = Math.min(...sources.map(d => d.tile[1])) * tileSize;
+
+  // Find source tile zoom level using first tile
+  const sTileZoom = sources[0].tile[2]; 
   const [matrixWidth, matrixHeight] = tilebelt.getExtent(sTileZoom);
-  const wgs84Canvas = createCanvasContext(
-    (sTileBbox[2] - sTileBbox[0]) * tileSize + tileSize, 
-    (sTileBbox[3] - sTileBbox[1]) * tileSize + tileSize
-  );
-
-  if (!mercatorCanvas || !wgs84Canvas) {
-    throw new Error('Mercator canvas does not exist');
-  }
-  
-  const sxOffset = sTileBbox[0] * tileSize;
-  const syOffset = sTileBbox[1] * tileSize;
-
-  // Create working canvas to access fetched images
-  for (const { tile, image } of tiles) {
-    wgs84Canvas.drawImage(
-      image, 
-      tile[0] * tileSize - sxOffset, // sx
-      tile[1] * tileSize - syOffset // sy
-    );
-  }
 
   const latToPx = (lat: number) => tilebelt.normalizeLat(lat) * matrixHeight * tileSize - syOffset;
 
+  const lngLatBbox = mercatorBboxToLngLatBbox(mercatorBbox);
   const sx0 = tilebelt.normalizeLng(lngLatBbox[0]) * matrixWidth * tileSize - sxOffset;
   const sx1 = tilebelt.normalizeLng(lngLatBbox[2]) * matrixWidth * tileSize - sxOffset;
   const sWidth = sx1 - sx0;
 
   const mercatorLatPerPx = (mercatorBbox[3] - mercatorBbox[1]) / tileSize;
 
+  const mercatorCanvas = createCanvasContext(tileSize, tileSize);
   // Iterate all y pixels
-  for (let i = 0; i < tileSize; i++) {    
+  for (let i = 0; i < tileSize; i += 1) {    
     const mercatorLat0 = mercatorBbox[3] - (mercatorLatPerPx * i);
     const mercatorLat1 = mercatorLat0 - mercatorLatPerPx;
     const sy0 = latToPx(mercatorToLngLat([mercatorBbox[0], mercatorLat0])[1]);

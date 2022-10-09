@@ -11,7 +11,6 @@ const defaultConfig: ReprojConfig = {
   protocol: REPROJECTED_PROTOCOL,
   tileSize: 256,
   zoomOffset: -1,
-  precision: 0.000001,
   method: 'resample',
   cacheSize: 10,
 };
@@ -56,8 +55,7 @@ const loadFn = (
         ctx.props.method,
         ctx.props.tileSize,
         tiles,
-        request.mercatorBbox,
-        request.lngLatBbox
+        request.mercatorBbox
       );
 
       cb(null, img);

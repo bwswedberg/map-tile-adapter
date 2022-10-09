@@ -1,6 +1,6 @@
 import * as tilebelt from 'tilebelt-wgs84'
 import { ReprojContext, ReprojRequest, Tile } from "./types";
-import { mercatorToLngLat } from './proj';
+import { mercatorBboxToLngLatBbox } from './proj';
 
 export const parseTileRequestParams = (
   ctx: ReprojContext, 
@@ -15,11 +15,9 @@ export const parseTileRequestParams = (
     +(reprojParams.get('z') ?? 0),
   ];
   const mercatorBbox = (reprojParams.get('bbox') ?? '').split(',').map((d: string) => +d);
-  const lngLatBbox = [
-    ...(mercatorToLngLat([mercatorBbox[0], mercatorBbox[1]])),
-    ...(mercatorToLngLat([mercatorBbox[2], mercatorBbox[3]])),
-  ].map(d => Math.round(d / ctx.props.precision) * ctx.props.precision);
+  const lngLatBbox = mercatorBboxToLngLatBbox(mercatorBbox);
   const wgs84Tiles = tilebelt.bboxToTiles(lngLatBbox, mercatorTile[2] + ctx.props.zoomOffset);
+  console.log(wgs84Tiles.length)
   return {
     mercatorTile,
     mercatorBbox,

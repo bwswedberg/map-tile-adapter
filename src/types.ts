@@ -14,7 +14,6 @@ export interface ReprojConfig {
   protocol: string;
   tileSize: number;
   zoomOffset: number;
-  precision: number;
   method: 'splice' | 'resample';
   cacheSize: number 
 }
@@ -34,7 +33,6 @@ export type ReprojContext = {
     protocol: string;
     tileSize: number;
     zoomOffset: number;
-    precision: number;
     method: 'splice' | 'resample';
     cacheSize: number;
   };
@@ -44,6 +42,5 @@ export type ReprojContext = {
 export type ReprojectionMethod = (
   tileSize: number,
   sources: { tile: Tile, image: HTMLImageElement }[],
-  mercatorBbox: Bbox,
-  lngLatBbox: Bbox
+  mercatorBbox: Bbox
 ) => Promise<ArrayBuffer | null>
