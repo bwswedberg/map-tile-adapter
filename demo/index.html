@@ -48,7 +48,7 @@
       maplibregl.addProtocol(
         window.maplibreglWgs84RasterProtocol.REPROJECTED_PROTOCOL, 
         window.maplibreglWgs84RasterProtocol.reprojectedProtocol({
-          method: 'resample', // 'splice',
+          resamplingInterval: [256, 1],
           // zoomOffset: 0,
         })
       );

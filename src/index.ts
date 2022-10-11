@@ -11,7 +11,7 @@ const defaultConfig: ReprojConfig = {
   protocol: REPROJECTED_PROTOCOL,
   tileSize: 256,
   zoomOffset: -1,
-  method: 'resample',
+  resamplingInterval: [256, 1],
   cacheSize: 10,
 };
 
@@ -41,21 +41,21 @@ const loadFn = (
       if (isCanceled) return cb(null, null);
 
       // Get all source tiles required to reproject
-      const tiles = await Promise.all(
+      const sourceTiles = await Promise.all(
         request.wgs84Tiles.map(tile => 
           getSourceTile(request.urlTemplate, tile, request.lngLatBbox, ctx.cache)
             .then(image => ({ tile, image }))
       ));
 
       // Bail if canceled or no tiles found
-      if (isCanceled || !tiles?.length) return cb(null, null);
+      if (isCanceled || !sourceTiles?.length) return cb(null, null);
 
       // Create new tile image from source tiles
       const img = await drawTile(
-        ctx.props.method,
+        sourceTiles,
+        request.mercatorBbox,
         ctx.props.tileSize,
-        tiles,
-        request.mercatorBbox
+        ctx.props.resamplingInterval
       );
 
       cb(null, img);

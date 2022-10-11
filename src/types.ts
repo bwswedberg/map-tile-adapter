@@ -14,7 +14,7 @@ export interface ReprojConfig {
   protocol: string;
   tileSize: number;
   zoomOffset: number;
-  method: 'splice' | 'resample';
+  resamplingInterval: number[];
   cacheSize: number 
 }
 
@@ -29,18 +29,7 @@ export type ReprojRequest = {
 export type ReprojSourceTileCache = LruCache<string, Promise<HTMLImageElement>>
 
 export type ReprojContext = {
-  props: {
-    protocol: string;
-    tileSize: number;
-    zoomOffset: number;
-    method: 'splice' | 'resample';
-    cacheSize: number;
-  };
+  props: ReprojConfig;
   cache: ReprojSourceTileCache;
 };
 
-export type ReprojectionMethod = (
-  tileSize: number,
-  sources: { tile: Tile, image: HTMLImageElement }[],
-  mercatorBbox: Bbox
-) => Promise<ArrayBuffer | null>
