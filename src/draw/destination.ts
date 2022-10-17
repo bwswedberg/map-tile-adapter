@@ -1,56 +1,77 @@
-import { Bbox, Tile } from "../types";
-import { mercatorToLngLat } from '../proj';
-import { canvasContextToArrayBuffer, createCanvasContext } from "./common";
-import { drawSource } from "./source";
+import { Bbox, ReprojContext2, Tile } from "../types";
+import { canvasContextToArrayBuffer, createCanvasContext } from "../util";
+import { drawSourceCanvas2 } from "./source";
 
 export const drawDestination = async (
-  sources: { tile: Tile, image: HTMLImageElement }[],
-  mercatorBbox: Bbox,
-  tileSize: number,
-  resamplingInterval: number[],
+  ctx: ReprojContext2,
+  sources: { tile: Tile, image: HTMLImageElement, bbox: Bbox }[],
+  destination: { tile: Tile, bbox: Bbox },
+  src?: { canvas: HTMLCanvasElement, translate: number[], tileSize: number, zoom: number },
+  dest?: { canvas: HTMLCanvasElement, translate: number[], tileSize: number, zoom: number },
 ) => {
-  const wgs84Source = drawSource(sources, tileSize);
+  const { 
+    tileSize, 
+    resamplingInterval, 
+    transform: {
+      sourceToPixel,
+      destinationToSource,
+      pixelToDestination,
+      destinationToPixel
+    }
+  } = ctx;
+  const source = drawSourceCanvas2(sources, ctx.tileSize, ctx.transform);
 
-  // Contains the destination image
-  const mercatorCanvasCtx = createCanvasContext(tileSize, tileSize);
+  const destinationCanvasCtx = createCanvasContext(tileSize, tileSize);
+
+  const destinationCtx = { 
+    zoom: destination.tile[2],
+    tileSize,
+  };
+
+  const sourceCtx = { 
+    zoom: sources[0].tile[2],
+    tileSize,
+  };
+
+  const dp0 = destinationToPixel([destination.bbox[0], destination.bbox[1]], destinationCtx);
+  const dp1 = destinationToPixel([destination.bbox[2], destination.bbox[3]], destinationCtx);
+  const dTranslate = [
+    Math.min(dp0[0], dp1[0]),
+    Math.min(dp0[1], dp1[1]),
+  ];
 
   const [dxInterval, dyInterval] = resamplingInterval;
-
-  // Mercator meters per pixel
-  const mxPerPixel = (mercatorBbox[2] - mercatorBbox[0]) / tileSize;
-  const myPerPixel = (mercatorBbox[3] - mercatorBbox[1]) / tileSize;
 
   for (let dx = 0; dx < tileSize; dx += dxInterval) {
     // Handle when tileSize is not divisible by x interval
     const dWidth = Math.min(dxInterval, tileSize - dx);
 
-    // Calculate xmin and xmax in mercator meters
-    const mx0 = mercatorBbox[0] + (mxPerPixel * dx);
-    const mx1 = mx0 + (mxPerPixel * dWidth);
-
-    for (let dy = 0; dy < tileSize; dy += dyInterval) {    
+    for (let dy = 0; dy < tileSize; dy += dyInterval) {  
       // Handle when tileSize is not divisible by y interval
       const dHeight = Math.min(dyInterval, tileSize - dy);
 
-      // Calculate ymin and ymax in mercator meters
-      const my0 = mercatorBbox[3] - (myPerPixel * dy);
-      const my1 = my0 - (myPerPixel * dHeight);
-      
-      // Convert mercator bbox to lngLat bbox
-      const sw = mercatorToLngLat([mx0, my0]);
-      const ne = mercatorToLngLat([mx1, my1]);
-
-      // Project lngLat bbox to source tiles pixel bbox
-      const sBbox = [
-        ...wgs84Source.lngLatToPixel(sw),
-        ...wgs84Source.lngLatToPixel(ne)
+      const dBbox = [
+        dx + dTranslate[0],
+        dy + dTranslate[1],
+        dx + dTranslate[0] + dWidth,
+        dy + dTranslate[1] + dHeight,
       ];
 
-      // Draw slice of mercator tile using the wgs84 source image
-      mercatorCanvasCtx.drawImage(
-        wgs84Source.canvas, 
-        sBbox[0], // sx 
-        sBbox[1], // sy
+      const sp0 = sourceToPixel(destinationToSource(pixelToDestination([dBbox[0], dBbox[1]], destinationCtx)), sourceCtx);
+      const sp1 = sourceToPixel(destinationToSource(pixelToDestination([dBbox[2], dBbox[3]], destinationCtx)), sourceCtx);
+
+      const sBbox = [
+        Math.min(sp0[0], sp1[0]),
+        Math.min(sp0[1], sp1[1]),
+        Math.max(sp0[0], sp1[0]),
+        Math.max(sp0[1], sp1[1]),
+      ];
+
+      // Draw slice of destinaton tile
+      destinationCanvasCtx.drawImage(
+        source.canvas, 
+        sBbox[0] - source.translate[0], // sx 
+        sBbox[1] - source.translate[1], // sy
         sBbox[2] - sBbox[0], // sWidth 
         sBbox[3] - sBbox[1], // sHeight, 
         dx, // dx 
@@ -61,5 +82,5 @@ export const drawDestination = async (
     }
   }
 
-  return await canvasContextToArrayBuffer(mercatorCanvasCtx);
+  return await canvasContextToArrayBuffer(destinationCanvasCtx);
 };

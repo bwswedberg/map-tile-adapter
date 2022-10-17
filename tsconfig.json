@@ -7,17 +7,15 @@
     "esModuleInterop": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node",
-    "target": "es6",
-    "module": "esnext",
+    "target": "ES5",
+    "moduleResolution": "NodeNext",
+    "module": "ESNext",
+    "declaration": true,
+    "sourceMap": true,
+    "outDir": "./dist",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-  },
-  "ts-node": {
-    "compilerOptions": {
-      "module": "CommonJS"
-    }
   },
   "include": ["src"]
 }

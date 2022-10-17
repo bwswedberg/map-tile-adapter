@@ -11,7 +11,7 @@
     <title>Maplibre GL WGS84 Raster Protocol</title>
     <link href='https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.css' rel='stylesheet' />
     <script src='https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.js'></script>
-    <script src="http://localhost:3000/maplibre-gl-wgs84-raster-protocol.js"></script>
+    <script src="http://localhost:3000/bundle.min.js"></script>
     <style>
       body {
         margin: 0;
@@ -46,9 +46,10 @@
     <script defer>
 
       maplibregl.addProtocol(
-        window.maplibreglWgs84RasterProtocol.REPROJECTED_PROTOCOL, 
-        window.maplibreglWgs84RasterProtocol.reprojectedProtocol({
+        window.RasterAdapter.REPROJECTED_PROTOCOL, 
+        window.RasterAdapter.reprojectedProtocol({
           resamplingInterval: [256, 1],
+          transform: window.RasterAdapter.epsg4326ToEpsg3857Transform()
           // zoomOffset: 0,
         })
       );
