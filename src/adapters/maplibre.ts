@@ -1,7 +1,7 @@
 import type { Cancelable, RequestParameters, ResponseCallback } from "maplibre-gl";
 import { ReprojContext, ReprojOptions, Tile } from "../types";
-import { SourceTileCache } from "../sourceTileCache";
-import { fetchImage, getImageUrl } from "../util";
+import { SourceTileCache } from "../cache";
+import { fetchImage } from "../util";
 import { loadTile } from "./base";
 
 export const REPROJECTED_PROTOCOL = 'reprj';
