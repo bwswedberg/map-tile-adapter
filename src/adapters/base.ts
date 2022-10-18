@@ -1,8 +1,8 @@
 import { drawTile } from "../draw";
-import { Bbox, Tile, ReprojContext2 } from "../types";
+import { Bbox, Tile, ReprojContext } from "../types";
 
 interface Props {
-  ctx: ReprojContext2;
+  ctx: ReprojContext;
   destination: { tile: Tile, bbox: Bbox };
   sourceRequests: { tile: Tile; bbox: Bbox; url: string }[];
   checkCanceled: () => boolean,

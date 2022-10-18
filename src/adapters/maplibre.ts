@@ -1,7 +1,7 @@
 import type { Cancelable, RequestParameters, ResponseCallback } from "maplibre-gl";
-import { ReprojContext2, ReprojOptions, Tile } from "../types";
+import { ReprojContext, ReprojOptions, Tile } from "../types";
 import { SourceTileCache } from "../sourceTileCache";
-import { fetchImage } from "../util";
+import { fetchImage, getImageUrl } from "../util";
 import { loadTile } from "./base";
 
 export const REPROJECTED_PROTOCOL = 'reprj';
@@ -16,7 +16,7 @@ export const reprojectedProtocol = (options: MaplibreAdapterOptions) => {
     maxCache: options.cacheSize ?? 10,
   });
   const tileSize = options.tileSize ?? 256;
-  const ctx: ReprojContext2 = { 
+  const ctx: ReprojContext = { 
     cache,
     tileSize,
     resamplingInterval: options.resamplingInterval ?? [tileSize, tileSize],
@@ -39,7 +39,7 @@ export const parseUrl = (url: string) => {
 };
 
 const loader = (
-  ctx: ReprojContext2, 
+  ctx: ReprojContext, 
   reqParams: RequestParameters, 
   cb: ResponseCallback<any>
 ): Cancelable => {

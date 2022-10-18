@@ -1,49 +1,10 @@
-import { Bbox, ReprojContext2, Tile } from "../types";
+import { Bbox, ReprojTransform, Tile } from "../types";
 import { createCanvasContext } from '../util';
 
 export const drawSourceCanvas = (
   sources: { tile: Tile, image: HTMLImageElement, bbox: Bbox }[], 
   tileSize: number,
-  transform: ReprojContext2['transform']
-) => {
-  // Find source tile bbox
-  const tileBbox = [
-    Math.min(...sources.map(d => d.tile[0])),
-    Math.min(...sources.map(d => d.tile[1])),
-    Math.max(...sources.map(d => d.tile[0])),
-    Math.max(...sources.map(d => d.tile[1])),
-  ];
-
-
-  // Calculate wgs84 canvas offset since wgs canvas origin is the top left source tile
-  const pixelOffset = [
-    tileBbox[0] * tileSize,
-    tileBbox[1] * tileSize
-  ];
-
-  // Create canvas using source tiles in wgs84. Canvas size fits source tile bbox
-  const canvasCtx = createCanvasContext(
-    (tileBbox[2] - tileBbox[0] + 1) * tileSize, // width
-    (tileBbox[3] - tileBbox[1] + 1) * tileSize // height
-  );
-
-  // Create working canvas to access fetched images
-  for (const { tile, image } of sources) {
-    canvasCtx.drawImage(
-      image, 
-      tile[0] * tileSize - pixelOffset[0], // sx
-      tile[1] * tileSize - pixelOffset[1] // sy
-    );
-  }
-  
-  return canvasCtx.canvas;
-};
-
-
-export const drawSourceCanvas2 = (
-  sources: { tile: Tile, image: HTMLImageElement, bbox: Bbox }[], 
-  tileSize: number,
-  transform: ReprojContext2['transform']
+  transform: ReprojTransform
 ) => {
   const zoom = sources[0].tile[2];
 
@@ -90,6 +51,8 @@ export const drawSourceCanvas2 = (
   
   return {
     translate: [sBbox[0], sBbox[1]],
+    zoom,
+    tileSize,
     canvas: canvasCtx.canvas
   };
 };

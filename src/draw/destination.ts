@@ -1,13 +1,10 @@
-import { Bbox, ReprojContext2, Tile } from "../types";
+import { Bbox, ReprojContext, Tile } from "../types";
 import { canvasContextToArrayBuffer, createCanvasContext } from "../util";
-import { drawSourceCanvas2 } from "./source";
 
 export const drawDestination = async (
-  ctx: ReprojContext2,
-  sources: { tile: Tile, image: HTMLImageElement, bbox: Bbox }[],
+  ctx: ReprojContext,
+  source: { canvas: HTMLCanvasElement, translate: number[], tileSize: number, zoom: number },
   destination: { tile: Tile, bbox: Bbox },
-  src?: { canvas: HTMLCanvasElement, translate: number[], tileSize: number, zoom: number },
-  dest?: { canvas: HTMLCanvasElement, translate: number[], tileSize: number, zoom: number },
 ) => {
   const { 
     tileSize, 
@@ -19,7 +16,6 @@ export const drawDestination = async (
       destinationToPixel
     }
   } = ctx;
-  const source = drawSourceCanvas2(sources, ctx.tileSize, ctx.transform);
 
   const destinationCanvasCtx = createCanvasContext(tileSize, tileSize);
 
@@ -29,8 +25,8 @@ export const drawDestination = async (
   };
 
   const sourceCtx = { 
-    zoom: sources[0].tile[2],
-    tileSize,
+    zoom: source.zoom,
+    tileSize: source.tileSize,
   };
 
   const dp0 = destinationToPixel([destination.bbox[0], destination.bbox[1]], destinationCtx);
