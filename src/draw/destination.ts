@@ -1,50 +1,47 @@
-import { Bbox, ReprojContext, Tile } from "../types";
-import { canvasContextToArrayBuffer, createCanvasContext } from "../util";
+import { Bbox, MapTileAdapterContext, Tile } from "src/types";
+import { createCanvasContext } from "src/util/dom";
 
 export const drawDestination = async (
-  ctx: ReprojContext,
-  source: { canvas: HTMLCanvasElement, translate: number[], tileSize: number, zoom: number },
+  ctx: MapTileAdapterContext,
+  source: { canvas: HTMLCanvasElement, translate: number[], zoom: number },
   destination: { tile: Tile, bbox: Bbox },
 ) => {
   const { 
-    tileSize, 
-    resamplingInterval, 
-    transform: {
-      sourceToPixel,
-      destinationToSource,
-      pixelToDestination,
-      destinationToPixel
-    }
+    destinationTileSize, 
+    sourceTileSize,
+    interval, 
+    sourceToPixel,
+    destinationToSource,
+    pixelToDestination,
+    destinationToPixel
   } = ctx;
 
-  const destinationCanvasCtx = createCanvasContext(tileSize, tileSize);
+  const destinationCanvasCtx = createCanvasContext(destinationTileSize, destinationTileSize);
 
-  const destinationCtx = { 
-    zoom: destination.tile[2],
-    tileSize,
-  };
+  const destinationZoom = destination.tile[2];
 
-  const sourceCtx = { 
-    zoom: source.zoom,
-    tileSize: source.tileSize,
-  };
-
-  const dp0 = destinationToPixel([destination.bbox[0], destination.bbox[1]], destinationCtx);
-  const dp1 = destinationToPixel([destination.bbox[2], destination.bbox[3]], destinationCtx);
+  const dp0 = destinationToPixel(
+    [destination.bbox[0], destination.bbox[1]], 
+    destinationZoom,
+    destinationTileSize
+  );
+  const dp1 = destinationToPixel(
+    [destination.bbox[2], destination.bbox[3]], 
+    destinationZoom,
+    destinationTileSize
+  );
   const dTranslate = [
     Math.min(dp0[0], dp1[0]),
     Math.min(dp0[1], dp1[1]),
   ];
 
-  const [dxInterval, dyInterval] = resamplingInterval;
-
-  for (let dx = 0; dx < tileSize; dx += dxInterval) {
+  for (let dx = 0; dx < destinationTileSize; dx += interval[0]) {
     // Handle when tileSize is not divisible by x interval
-    const dWidth = Math.min(dxInterval, tileSize - dx);
+    const dWidth = Math.min(interval[0], destinationTileSize - dx);
 
-    for (let dy = 0; dy < tileSize; dy += dyInterval) {  
+    for (let dy = 0; dy < destinationTileSize; dy += interval[1]) {  
       // Handle when tileSize is not divisible by y interval
-      const dHeight = Math.min(dyInterval, tileSize - dy);
+      const dHeight = Math.min(interval[1], destinationTileSize - dy);
 
       const dBbox = [
         dx + dTranslate[0],
@@ -53,8 +50,28 @@ export const drawDestination = async (
         dy + dTranslate[1] + dHeight,
       ];
 
-      const sp0 = sourceToPixel(destinationToSource(pixelToDestination([dBbox[0], dBbox[1]], destinationCtx)), sourceCtx);
-      const sp1 = sourceToPixel(destinationToSource(pixelToDestination([dBbox[2], dBbox[3]], destinationCtx)), sourceCtx);
+      const sp0 = sourceToPixel(
+        destinationToSource(
+          pixelToDestination(
+            [dBbox[0], dBbox[1]], 
+            destinationZoom,
+            destinationTileSize
+          )
+        ), 
+        source.zoom,
+        sourceTileSize
+      );
+      const sp1 = sourceToPixel(
+        destinationToSource(
+          pixelToDestination(
+            [dBbox[2], dBbox[3]], 
+            destinationZoom,
+            destinationTileSize
+          )
+        ), 
+        source.zoom,
+        sourceTileSize
+      );
 
       const sBbox = [
         Math.min(sp0[0], sp1[0]),
@@ -78,5 +95,9 @@ export const drawDestination = async (
     }
   }
 
-  return await canvasContextToArrayBuffer(destinationCanvasCtx);
+  return {
+    canvas: destinationCanvasCtx.canvas,
+    translate: dTranslate,
+    zoom: destinationZoom,
+  };
 };

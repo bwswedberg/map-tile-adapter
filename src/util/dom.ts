@@ -1,5 +1,3 @@
-import { Bbox, Tile } from "./types";
-
 export const createCanvasContext = (width: number, height: number) => {
   const canvas = document.createElement('canvas');
   canvas.width = width;
@@ -9,11 +7,11 @@ export const createCanvasContext = (width: number, height: number) => {
   return ctx;
 };
 
-export const canvasContextToArrayBuffer = async (
-  canvasContext: CanvasRenderingContext2D
+export const canvasToArrayBuffer = async (
+  canvas: HTMLCanvasElement
 ): Promise<ArrayBuffer | null> => {
   return await new Promise((resolve, reject) => {
-    canvasContext.canvas.toBlob(async blob => {
+    canvas.toBlob(async blob => {
       if (!blob) return resolve(null);
       try {
         const buf = await blob.arrayBuffer();
@@ -38,18 +36,3 @@ export const fetchImage = async (url: string): Promise<HTMLImageElement> => {
     }
   });
 };
-
-export const getImageUrl = (
-  urlTemplate: string,
-  tile: Tile,
-  lngLatBbox: Bbox,
-) => {
-  return (
-    urlTemplate
-      .replace('{bbox-epsg-4326}', `${lngLatBbox.join(',')}`)
-      .replace('{x-epsg-4326}', `${tile[0]}`)
-      .replace('{y-epsg-4326}', `${tile[1]}`)
-      .replace('{z-epsg-4326}', `${tile[2]}`)
-  );
-};
-

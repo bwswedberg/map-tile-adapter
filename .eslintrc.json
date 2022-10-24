@@ -1,17 +1,42 @@
 {
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  },
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 2018,
     "sourceType": "module"
   },
   "plugins": [
-    "@typescript-eslint",
-    "import"
+    "@typescript-eslint"
   ],
   "extends": [
     "plugin:@typescript-eslint/recommended"
   ],
+  "overrides": [
+    {
+      "files": ["cypress/**"],
+      "plugins": ["cypress"],
+      "extends": [ "plugin:cypress/recommended"],
+      "rules": {
+        "cypress/globals": true
+      }
+    },
+    {
+      "files": ["src/**/__tests__/*", "src/**/*.test.ts"],
+      "plugins": ["jest"],
+      "extends": ["plugin:jest/recommended"],
+      "rules": { 
+        "jest/globals": true
+      }
+    }
+  ],
   "settings": {
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx"]
+    },
     "import/resolver": {
       "typescript": {}
     }

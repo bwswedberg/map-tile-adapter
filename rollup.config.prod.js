@@ -21,7 +21,7 @@ export default [
       {
         file: 'dist/bundle.min.js',
         format: 'umd',
-        name: 'tilebeltWgs84',
+        name: 'MapTileAdapter',
         sourcemap: true,
         plugins: [terser()]
       }

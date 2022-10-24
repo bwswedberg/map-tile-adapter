@@ -1,4 +1,4 @@
-import { SourceTileCache } from './sourceTileCache';
+import { TileCache } from './util/cache';
 
 /**
  * [x, y, z]
@@ -10,24 +10,32 @@ export type Tile = number[] | [number, number, number];
  */
 export type Bbox = number[] | [number, number, number, number];
 
-export interface ReprojTransform {
-  destinationToPixel: ([dx, dy]: number[], ctx: { zoom: number, tileSize: number }) => number[];
-  pixelToDestination: ([px, py]: number[], ctx: { zoom: number, tileSize: number }) => number[];
-  destinationToSource: ([dx, dy]: number[]) => number[];
-  sourceToPixel: ([sx, sy]: number[], ctx: { zoom: number, tileSize: number }) => number[];
-  destinationTileToSourceTiles: (props: { tile: Tile, bbox: Bbox, urlTemplate: string }) => { tile: Tile, bbox: Bbox, url: string }[];
+export type DestinationToPixelFn = ([dx, dy]: number[], zoom: number, tileSize: number) => number[];
+export type PixelToDestinationFn = ([px, py]: number[], zoom: number, tileSize: number) => number[];
+export type DestinationToSourceFn = ([dx, dy]: number[]) => number[];
+export type SourceToPixelFn = ([sx, sy]: number[], zoom: number, tileSize: number) => number[];
+export type DestinationTileToSourceTilesFn = (props: { tile: Tile, bbox: Bbox }) => { tile: Tile, bbox: Bbox }[];
+
+export interface MapTileAdapterOptions {
+  cacheSize?: number;
+  destinationTileSize?: number;
+  destinationTileToSourceTiles: DestinationTileToSourceTilesFn;
+  destinationToPixel: DestinationToPixelFn;
+  destinationToSource: DestinationToSourceFn;
+  interval?: number[];
+  pixelToDestination: PixelToDestinationFn;
+  sourceTileSize?: number;
+  sourceToPixel: SourceToPixelFn;
 }
 
-export interface ReprojOptions {
-  tileSize: number;
-  resamplingInterval: number[];
-  cacheSize: number;
-  transform: ReprojTransform;
-}
-
-export type ReprojContext = {
-  tileSize: number;
-  resamplingInterval: number[];
-  cache: SourceTileCache<HTMLImageElement | null>;
-  transform: ReprojTransform;
+export type MapTileAdapterContext = {
+  cache: TileCache<HTMLImageElement | null>;
+  destinationTileSize: number;
+  destinationTileToSourceTiles: DestinationTileToSourceTilesFn;
+  destinationToPixel: DestinationToPixelFn;
+  destinationToSource: DestinationToSourceFn;
+  interval: number[];
+  pixelToDestination: PixelToDestinationFn;
+  sourceTileSize: number;
+  sourceToPixel: SourceToPixelFn;
 };

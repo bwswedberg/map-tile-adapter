@@ -6,9 +6,9 @@
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
-      content="Vector Tile Protocols"
+      content="Map Tile Adapter"
     />
-    <title>Maplibre GL WGS84 Raster Protocol</title>
+    <title>Map Tile Adapter</title>
     <link href='https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.css' rel='stylesheet' />
     <script src='https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.js'></script>
     <script src="http://localhost:3000/bundle.min.js"></script>
@@ -44,13 +44,15 @@
       </label>
     </div>
     <script defer>
-
+      var mtaProtocol = window.MapTileAdapter.maplibreTileAdapterProtocol({
+        sourceTileSize: 256,
+        destinationTileSize: 256,
+        interval: [256, 1],
+        ...window.MapTileAdapter.epsg4326ToEpsg3857Presets()
+      });
       maplibregl.addProtocol(
-        window.RasterAdapter.REPROJECTED_PROTOCOL, 
-        window.RasterAdapter.reprojectedProtocol({
-          resamplingInterval: [256, 1],
-          transform: window.RasterAdapter.epsg4326ToEpsg3857Transform()
-        })
+        mtaProtocol.protocol, 
+        mtaProtocol.loader
       );
 
       var map = new maplibregl.Map({
@@ -60,7 +62,7 @@
           sources: {
             'basic4326-256-local': {
               type: 'raster',
-              tiles: ['reprj://bbox={bbox-epsg-3857}&z={z}&x={x}&y={y}://http://localhost:3000/tiles/epsg4326/{z-epsg-4326}/{x-epsg-4326}/{y-epsg-4326}.png'],
+              tiles: ['mta://bbox={bbox-epsg-3857}&z={z}&x={x}&y={y}://http://localhost:3000/tiles/epsg4326/{z-source}/{x-source}/{y-source}.png'],
               tileSize: 256,
               minzoom: 1,
               maxzoom: 3,
@@ -68,7 +70,7 @@
             },
             'basic4326-256': {
               type: 'raster',
-              tiles: ['reprj://bbox={bbox-epsg-3857}&z={z}&x={x}&y={y}://https://api.maptiler.com/maps/basic-4326/256/{z-epsg-4326}/{x-epsg-4326}/{y-epsg-4326}.png?key=bS8WSqUoVgfQRrMrQuvE'],
+              tiles: ['mta://bbox={bbox-epsg-3857}&z={z}&x={x}&y={y}://https://api.maptiler.com/maps/basic-4326/256/{z-source}/{x-source}/{y-source}.png?key=bS8WSqUoVgfQRrMrQuvE'],
               tileSize: 256,
               scheme: 'xyz'
             },

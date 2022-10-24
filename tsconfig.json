@@ -1,14 +1,13 @@
 {
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "target": "ES5",
-    "moduleResolution": "NodeNext",
+    "moduleResolution": "Node",
     "module": "ESNext",
     "declaration": true,
     "sourceMap": true,
@@ -16,6 +15,15 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
+    "baseUrl": "."
   },
-  "include": ["src"]
+  "include": [
+    "src/**/*",
+    "cypress/**/*"
+  ],
+  "exclude": [
+    "src/**/*.test.ts",
+    "src/**/__tests__/*",
+    "node_modules"
+  ]
 }

@@ -8,7 +8,7 @@ export default {
   output: {
     file: 'dist/bundle.min.js',
     format: 'umd',
-    name: 'RasterAdapter',
+    name: 'MapTileAdapter',
     sourcemap: true
   },
   plugins: [

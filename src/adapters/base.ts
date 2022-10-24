@@ -1,19 +1,19 @@
-import { drawTile } from "../draw";
-import { Bbox, Tile, ReprojContext } from "../types";
+import { drawSource, drawDestination } from "../draw";
+import { Bbox, MapTileAdapterContext, Tile } from "../types";
 
 interface Props {
-  ctx: ReprojContext;
-  destination: { tile: Tile, bbox: Bbox };
+  ctx: MapTileAdapterContext;
+  destinationRequest: { tile: Tile, bbox: Bbox };
   sourceRequests: { tile: Tile; bbox: Bbox; url: string }[];
   checkCanceled: () => boolean,
 }
 
 export const loadTile = async ({ 
   ctx,
-  destination,
+  destinationRequest,
   sourceRequests,
   checkCanceled
-}: Props): Promise<ArrayBuffer | null> => {
+}: Props): Promise<{ canvas: HTMLCanvasElement } | null> => {
   try {
     // Bail if canceled 
     if (checkCanceled()) return null;
@@ -32,13 +32,9 @@ export const loadTile = async ({
     if (checkCanceled() || !sources?.length) return null
 
     // Create new tile image from source tiles
-    const img = await drawTile(
-      ctx,
-      sources as any,
-      destination
-    );
+    const source = drawSource(ctx, sources);
 
-    return img;
+    return drawDestination(ctx, source, destinationRequest);
   } catch (err) {
     const error = err instanceof Error ? err 
       : typeof err === 'string' ? new Error(err)

@@ -1,22 +1,21 @@
-import { Bbox, ReprojTransform, Tile } from "../types";
-import { createCanvasContext } from '../util';
+import { Bbox, MapTileAdapterContext, Tile } from "src/types";
+import { createCanvasContext } from 'src/util/dom';
 
-export const drawSourceCanvas = (
-  sources: { tile: Tile, image: HTMLImageElement, bbox: Bbox }[], 
-  tileSize: number,
-  transform: ReprojTransform
+export const drawSource = (
+  ctx: MapTileAdapterContext,
+  sources: { tile: Tile, image: HTMLImageElement | null, bbox: Bbox }[], 
 ) => {
   const zoom = sources[0].tile[2];
 
-  const sp0 = transform.sourceToPixel([
+  const sp0 = ctx.sourceToPixel([
     Math.min(...sources.map(d => d.bbox[0])),
     Math.min(...sources.map(d => d.bbox[1]))
-  ], { zoom, tileSize });
+  ], zoom, ctx.sourceTileSize);
 
-  const sp1 = transform.sourceToPixel([
+  const sp1 = ctx.sourceToPixel([
     Math.max(...sources.map(d => d.bbox[2])),
     Math.max(...sources.map(d => d.bbox[3]))
-  ], { zoom, tileSize });
+  ], zoom, ctx.sourceTileSize);
 
   const sBbox = [
     Math.min(sp0[0], sp1[0]),
@@ -32,8 +31,10 @@ export const drawSourceCanvas = (
 
   // Create working canvas to access fetched images
   for (const { bbox, image } of sources) {
-    const t0 = transform.sourceToPixel([bbox[0], bbox[1]], { zoom, tileSize });
-    const t1 = transform.sourceToPixel([bbox[2], bbox[3]], { zoom, tileSize });
+    if (!image) continue;
+
+    const t0 = ctx.sourceToPixel([bbox[0], bbox[1]], zoom, ctx.sourceTileSize);
+    const t1 = ctx.sourceToPixel([bbox[2], bbox[3]], zoom, ctx.sourceTileSize);
 
     const tBbox = [
       Math.min(t0[0], t1[0]),
@@ -52,7 +53,6 @@ export const drawSourceCanvas = (
   return {
     translate: [sBbox[0], sBbox[1]],
     zoom,
-    tileSize,
     canvas: canvasCtx.canvas
   };
 };
