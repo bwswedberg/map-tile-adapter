@@ -66,24 +66,6 @@ export const metersToPixels = ([mx, my]: number[], zoom: number, tileSize: numbe
 }
 
 /**
- * Returns bounds of the given tile in EPSG:900913 coordinates
- * @param tilePoint
- * @param zoom 
- * @returns bbox [xmin, ymin, xmax, ymax]
- */
-export const tileBbox = ([tx, ty]: number[], zoom: number, tileSize: number) => {
-  const [xmin, ymin] = pixelsToMeters([
-    tx * tileSize,
-    ty * tileSize,
-  ], zoom, tileSize);
-  const [xmax, ymax] = pixelsToMeters([
-    (tx + 1) * tileSize,
-    (ty + 1) * tileSize,
-  ], zoom, tileSize);
-  return [xmin, ymin, xmax, ymax];
-}
-
-/**
  * Converts pixel coordinates in given zoom level of pyramid to EPSG:900913
  * @param xy
  * @param zoom 
@@ -144,24 +126,46 @@ export const metersToTile = (xy: number[], zoom: number, tileSize: number) => {
 }
 
 /**
- * Converts TMS tile coordinates to Google Tile coordinates
- * coordinate origin is moved from bottom-left to top-left corner of the extent
- * @param tile
- * @param zoom
- * @returns tile [x, y, z]
+ * Returns bounds of the given tile in EPSG:900913 coordinates
+ * @param tile [x, y, z]
+ * @param tileSize 
+ * @returns bbox [xmin, ymin, xmax, ymax]
  */
-export const tmsTileToGoogleTile = ([x, y, z]: number[]) => {
-  return [x, Math.pow(2, z) - 1 - y, z];
+ export const tileBbox = ([x, y, z]: number[], tileSize: number) => {
+  const [xmin, ymin] = pixelsToMeters([
+    x * tileSize,
+    y * tileSize,
+  ], z, tileSize);
+  const [xmax, ymax] = pixelsToMeters([
+    (x + 1) * tileSize,
+    (y + 1) * tileSize,
+  ], z, tileSize);
+  return [xmin, ymin, xmax, ymax];
 }
 
 /**
- * Converts TMS tile coordinates to Microsoft QuadTree
- * @param tilePoint 
- * @param zoom
+ * Converts TMS tile coordinates to XYZ coordinates
+ * Tile coord origin: XYZ is top-left, TMS is bottom-left
+ * @param tile [x, y, z]
+ * @returns tile [x, y, z]
+ */
+export const tmsToXyz = ([x, y, z]: number[]) => [x, (1 << z) - y - 1, z];
+
+/**
+ * Converts XYZ tile coordinates to TMS coordinates. Alias for tmsToXyz (same euqation).
+ * Tile coord origin: XYZ is top-left, TMS is bottom-left
+ * @param tile [x, y, z]
+ * @returns tile [x, y, z]
+ */
+export const xyzToTms = tmsToXyz;
+
+/**
+ * Converts TMS tile to microsoft quadkey
+ * @param tile [x, y, z]
  * @returns 
  */
-export const tmsTileToQuadKey = ([x, y, z]: number[]) => {
-  let quadKey = "";
+export const tileToQuadkey = ([x, y, z]: number[]) => {
+  let quadkey = "";
   const ty = 2 ** z - 1 - y;
   for (let i = z; i > 0; i--) {
     let digit = 0;
@@ -172,30 +176,30 @@ export const tmsTileToQuadKey = ([x, y, z]: number[]) => {
     if ((ty & mask) != 0) {
         digit += 2;
     }
-    quadKey += digit.toString();
+    quadkey += digit.toString();
   }
-  return quadKey;
+  return quadkey;
 }
 
 /**
- * Transform quadkey to tile coordinates
+ * Converts microsoft quadkey to TMS tile
  * @param quadKey 
- * @returns 
+ * @returns tile [x, y, z]
  */
-export const quadKeyToTmsTile = (quadKey: string) => {
+export const quadkeyToTile = (quadkey: string) => {
   let tx = 0;
   let ty = 0;
-  const zoom = quadKey.length;
+  const zoom = quadkey.length;
   for (let i = 0; i < zoom; i++) {
     const bit = zoom - i;
     const mask = 1 << (bit - 1);
-    if (quadKey[zoom - bit] === "1") {
+    if (quadkey[zoom - bit] === "1") {
       tx |= mask;
     }
-    if (quadKey[zoom - bit] == "2") {
+    if (quadkey[zoom - bit] == "2") {
       ty |= mask;
     }
-    if (quadKey[zoom - bit] == "3") {
+    if (quadkey[zoom - bit] == "3") {
       tx |= mask;
       ty |= mask;
     }
