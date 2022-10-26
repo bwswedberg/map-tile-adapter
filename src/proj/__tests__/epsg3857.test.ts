@@ -1,5 +1,4 @@
 import * as epsg3857 from '../epsg3857';
-import { WebMercator } from '../WebMercator';
 
 const origin = {
   lngLat: [0, 0],
@@ -8,7 +7,7 @@ const origin = {
     tileSize: 256,
     zoom: 0,
     pixels: [128, 128],
-    raster: [128, 128],
+    screen: [128, 128],
     tileTms: [0, 0, 0],
     tileXyz: [0, 0, 0],
     tileBBox: [-20037508.342789244, -20037508.342789244, 20037508.342789244, 20037508.342789244],
@@ -23,7 +22,7 @@ const nw = {
     tileSize: 256,
     zoom: 7,
     pixels: [9372.07780693334, 20231.818876281897],
-    raster: [9372.07780693334, 12536.181123718103],
+    screen: [9372.07780693334, 12536.181123718103],
     tileTms: [36, 79, 7],
     tileXyz: [36, 48, 7],
     tileBBox: [-8766409.899970295, 4696291.017841227, -8453323.832114212, 5009377.085697312],
@@ -38,7 +37,7 @@ const ne = {
     tileSize: 256,
     zoom: 7,
     pixels: [16592.8681472, 21495.083837501577],
-    raster: [16592.8681472, 11272.916162498423],
+    screen: [16592.8681472, 11272.916162498423],
     tileTms: [64, 83, 7],
     tileXyz: [64, 44, 7],
     tileBBox: [0, 5948635.289265558, 313086.06785608083, 6261721.357121639],
@@ -53,7 +52,7 @@ const sw = {
     tileSize: 256,
     zoom: 7,
     pixels: [12450.82237155556, 14236.644731847464],
-    raster: [12450.82237155556, 18531.355268152536],
+    screen: [12450.82237155556, 18531.355268152536],
     tileTms: [48, 55, 7],
     tileXyz: [48, 72, 7],
     tileBBox: [-5009377.085697312, -2817774.6107047386, -4696291.017841229, -2504688.542848654],
@@ -68,7 +67,7 @@ const se = {
     tileSize: 256,
     zoom: 7,
     pixels:   [30147.94863502221, 13105.562753645527],
-    raster: [30147.94863502221, 19662.43724635447],
+    screen: [30147.94863502221, 19662.43724635447],
     tileTms: [117, 51, 7],
     tileXyz: [117, 76, 7],
     tileBBox: [16593561.59637234, -4070118.8821290657, 16906647.66422843, -3757032.814272983],
@@ -105,9 +104,6 @@ describe('getResolution', () => {
   ])('should return correct meters/pixel - %s', (label, zoom, tileSize, res) => {
     const output = epsg3857.getResolution(zoom, tileSize);
     expect(output).toBe(res);
-
-    const wm = new WebMercator(tileSize);
-    expect(wm.resolution(zoom)).toBe(output);
   });
 });
 
@@ -124,8 +120,6 @@ describe('lngLatToMeters', () => {
       expect.closeTo(meters[0], 7),
       expect.closeTo(meters[1], 7),
     ]);
-
-    expect(WebMercator.lngLatToMeters(lngLat)).toStrictEqual(output);
   });
 });
 
@@ -142,8 +136,6 @@ describe('metersToLngLat', () => {
       expect.closeTo(lngLat[0], 7),
       expect.closeTo(lngLat[1], 7),
     ]);
-
-    expect(WebMercator.metersToLngLat(meters)).toStrictEqual(output);
   });
 });
 
@@ -160,9 +152,6 @@ describe('metersToPixels', () => {
       expect.closeTo(pixels[0], 7),
       expect.closeTo(pixels[1], 7),
     ]);
-
-    const wm = new WebMercator(tileSize);
-    expect(wm.metersToPixels(meters, zoom)).toStrictEqual(output);
   });
 });
 
@@ -179,9 +168,6 @@ describe('pixelsToMeters', () => {
       expect.closeTo(meters[0], 7),
       expect.closeTo(meters[1], 7),
     ]);
-
-    const wm = new WebMercator(tileSize);
-    expect(wm.pixelsToMeters(pixels, zoom)).toStrictEqual(output);
   });
 });
 
@@ -195,31 +181,38 @@ describe('pixelsToTile', () => {
   ])('should return correct tile - %s', (label, pixels, zoom, tileSize, tile) => {
     const output = epsg3857.pixelsToTile(pixels, zoom, tileSize);
     expect(output).toStrictEqual(tile);
+  });
+});
 
-    const wm = new WebMercator(tileSize);
-    expect(wm.pixelsToTile(pixels)).toStrictEqual([
-      output[0],
-      output[1],
+describe('pixelsToScreenPixels', () => {
+  test.each([
+    ['origin', origin.z0.pixels, origin.z0.zoom, origin.z0.tileSize, origin.z0.screen],
+    ['nw', nw.z7.pixels, nw.z7.zoom, nw.z7.tileSize, nw.z7.screen],
+    ['ne', ne.z7.pixels, ne.z7.zoom, ne.z7.tileSize, ne.z7.screen],
+    ['sw', sw.z7.pixels, sw.z7.zoom, sw.z7.tileSize, sw.z7.screen],
+    ['se', se.z7.pixels, se.z7.zoom, se.z7.tileSize, se.z7.screen],
+  ])('should return correct screen pixels (origin top left) - %s', (label, pixels, zoom, tileSize, screen) => {
+    const output = epsg3857.pixelsToScreenPixels(pixels, zoom, tileSize);
+    expect(output).toStrictEqual([
+      expect.closeTo(screen[0], 7),
+      expect.closeTo(screen[1], 7),
     ]);
   });
 });
 
-describe('pixelsToRaster', () => {
+describe('screenPixelsToPixels', () => {
   test.each([
-    ['origin', origin.z0.pixels, origin.z0.zoom, origin.z0.tileSize, origin.z0.raster],
-    ['nw', nw.z7.pixels, nw.z7.zoom, nw.z7.tileSize, nw.z7.raster],
-    ['ne', ne.z7.pixels, ne.z7.zoom, ne.z7.tileSize, ne.z7.raster],
-    ['sw', sw.z7.pixels, sw.z7.zoom, sw.z7.tileSize, sw.z7.raster],
-    ['se', se.z7.pixels, se.z7.zoom, se.z7.tileSize, se.z7.raster],
-  ])('should return correct raster (origin top left) - %s', (label, pixels, zoom, tileSize, raster) => {
-    const output = epsg3857.pixelsToRaster(pixels, zoom, tileSize);
+    ['origin', origin.z0.screen, origin.z0.zoom, origin.z0.tileSize, origin.z0.pixels],
+    ['nw', nw.z7.screen, nw.z7.zoom, nw.z7.tileSize, nw.z7.pixels],
+    ['ne', ne.z7.screen, ne.z7.zoom, ne.z7.tileSize, ne.z7.pixels],
+    ['sw', sw.z7.screen, sw.z7.zoom, sw.z7.tileSize, sw.z7.pixels],
+    ['se', se.z7.screen, se.z7.zoom, se.z7.tileSize, se.z7.pixels],
+  ])('should return correct pixels (origin bottom left) - %s', (label, screen, zoom, tileSize, pixels) => {
+    const output = epsg3857.screenPixelsToPixels(screen, zoom, tileSize);
     expect(output).toStrictEqual([
-      expect.closeTo(raster[0], 7),
-      expect.closeTo(raster[1], 7),
+      expect.closeTo(pixels[0], 7),
+      expect.closeTo(pixels[1], 7),
     ]);
-
-    const wm = new WebMercator(tileSize);
-    expect(wm.pixelsToRaster(pixels, zoom)).toStrictEqual(output);
   });
 });
 
@@ -233,12 +226,6 @@ describe('lngLatToTile', () => {
   ])('should return correct tile - %s', (label, lngLat, zoom, tileSize, tile) => {
     const output = epsg3857.lngLatToTile(lngLat, zoom, tileSize);
     expect(output).toStrictEqual(tile);
-
-    const wm = new WebMercator(tileSize);
-    expect(wm.lngLatToTile(lngLat, zoom)).toStrictEqual([
-      output[0],
-      output[1],
-    ]);
   });
 });
 
@@ -252,12 +239,6 @@ describe('metersToTile', () => {
   ])('should return correct tile - %s', (label, meters, zoom, tileSize, tile) => {
     const output = epsg3857.metersToTile(meters, zoom, tileSize);
     expect(output).toStrictEqual(tile);
-
-    const wm = new WebMercator(tileSize);
-    expect(wm.metersToTile(meters, zoom)).toStrictEqual([
-      output[0],
-      output[1],
-    ]);
   });
 });
 
@@ -271,9 +252,6 @@ describe('tileBbox', () => {
   ])('should return correct tile bbox in meters - %s', (label, tile, tileSize, bbox) => {
     const output = epsg3857.tileBbox(tile, tileSize);
     expect(output).toStrictEqual(bbox);
-
-    const wm = new WebMercator(tileSize);
-    expect(wm.tileBbox([tile[0], tile[1]], tile[2])).toStrictEqual(output);
   });
 });
 
@@ -287,8 +265,6 @@ describe('tmsToXyz', () => {
   ])('should return correct xyz tile - %s', (label, tile, tileXyz) => {
     const output = epsg3857.tmsToXyz(tile);
     expect(output).toStrictEqual(tileXyz);
-
-    expect(WebMercator.tmsTileToGoogleTile(tile)).toStrictEqual(output);
   });
 });
 
@@ -319,8 +295,6 @@ describe('tileToQuadkey', () => {
   ])('should return correct quadkey - %s', (label, tile, quadkey) => {
     const output = epsg3857.tileToQuadkey(tile);
     expect(output).toStrictEqual(quadkey);
-
-    expect(WebMercator.tmsTileToQuadKey(tile)).toStrictEqual(output);
   });
 });
 
@@ -338,7 +312,5 @@ describe('quadkeyToTile', () => {
   ])('should return correct tile - %s', (label, quadkey, tile) => {
     const output = epsg3857.quadkeyToTile(quadkey);
     expect(output).toStrictEqual(tile);
-
-    expect(WebMercator.quadKeyToTmsTile(quadkey)).toStrictEqual(output);
   });
 });

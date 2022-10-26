@@ -1,31 +1,23 @@
 import * as tilebelt from 'tilebelt-wgs84';
 import { Bbox, DestinationTileToSourceTilesFn, DestinationToPixelFn, DestinationToSourceFn, PixelToDestinationFn, SourceToPixelFn, Tile } from "../types";
-import { WebMercator } from '../proj/WebMercator';
+import { metersToPixels, metersToLngLat, pixelsToMeters, pixelsToScreenPixels, screenPixelsToPixels } from '../proj/epsg3857';
 
-type Epsg4326ToEpsg3857PresetOptions = {
+interface PresetOptions {
   zoomOffset: number;
 }
 
-const destinationToPixel: DestinationToPixelFn = ([x, y], zoom, tileSize) => {
-  const proj = new WebMercator(tileSize);
-  const p = proj.metersToPixels([x, y], zoom);
-  return [
-    p[0],
-    (tileSize << zoom) - p[1] // transform y origin from bottom to top
-  ];
+const destinationToPixel: DestinationToPixelFn = (xy, zoom, tileSize) => {
+  const p = metersToPixels(xy, zoom, tileSize);
+  return pixelsToScreenPixels(p, zoom, tileSize);
 }
 
-const pixelToDestination: PixelToDestinationFn = ([x, y], zoom, tileSize) => {
-  const proj = new WebMercator(tileSize);
-  const p = [
-    x,
-    (tileSize << zoom) - y // transform y origin from top to bottom
-  ]
-  return proj.pixelsToMeters(p, zoom);
+const pixelToDestination: PixelToDestinationFn = (xy, zoom, tileSize) => {
+  const p = screenPixelsToPixels(xy, zoom, tileSize)
+  return pixelsToMeters(p, zoom, tileSize);
 }
 
 const destinationToSource: DestinationToSourceFn = ([x, y]) => {
-  return WebMercator.metersToLngLat([x, y]);
+  return metersToLngLat([x, y]);
 }
 
 const sourceToPixel: SourceToPixelFn = (lngLat, zoom, tileSize) => {
@@ -38,11 +30,11 @@ const sourceToPixel: SourceToPixelFn = (lngLat, zoom, tileSize) => {
 
 const destinationTileToSourceTiles = (
   destinationRequest: { tile: Tile, bbox: Bbox },
-  options: Epsg4326ToEpsg3857PresetOptions,
+  options: PresetOptions,
 ) => {
   const lngLatBbox = [
-    ...(WebMercator.metersToLngLat([destinationRequest.bbox[0], destinationRequest.bbox[1]])),
-    ...(WebMercator.metersToLngLat([destinationRequest.bbox[2], destinationRequest.bbox[3]])),
+    ...metersToLngLat([destinationRequest.bbox[0], destinationRequest.bbox[1]]),
+    ...metersToLngLat([destinationRequest.bbox[2], destinationRequest.bbox[3]]),
   ];
   const zoom = destinationRequest.tile[2];
   const sourceTiles: Tile[] = tilebelt.bboxToTiles(lngLatBbox, zoom + options.zoomOffset ?? 0);
@@ -52,22 +44,29 @@ const destinationTileToSourceTiles = (
   });
 };
 
-const defaultOptions: Epsg4326ToEpsg3857PresetOptions = {
+const defaultOptions: PresetOptions = {
   zoomOffset: -1
 };
 
+export type Epsg4326ToEpsg3857PresetOptions = Partial<PresetOptions>;
+
 export const epsg4326ToEpsg3857Presets = (
-  options: Epsg4326ToEpsg3857PresetOptions = defaultOptions
+  options?: Epsg4326ToEpsg3857PresetOptions
 ): {
   destinationToPixel: DestinationToPixelFn;
   pixelToDestination: PixelToDestinationFn;
   destinationToSource: DestinationToSourceFn;
   sourceToPixel: SourceToPixelFn;
   destinationTileToSourceTiles: DestinationTileToSourceTilesFn;
-} => ({
-  destinationToPixel,
-  pixelToDestination,
-  destinationToSource,
-  sourceToPixel,
-  destinationTileToSourceTiles: (props) => destinationTileToSourceTiles(props, options),
-});
+} => {
+  const _options: PresetOptions = { 
+    zoomOffset: options?.zoomOffset ?? defaultOptions.zoomOffset,
+  };
+  return {
+    destinationToPixel,
+    pixelToDestination,
+    destinationToSource,
+    sourceToPixel,
+    destinationTileToSourceTiles: (props) => destinationTileToSourceTiles(props, _options),
+  };
+};

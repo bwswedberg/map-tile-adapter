@@ -12,7 +12,9 @@ export default {
     sourcemap: true
   },
   plugins: [
-    tsc(), 
+    tsc({
+      include: ["src/**/*"]
+    }), 
     nodeResolve(), 
     commonjs(),
     serve({

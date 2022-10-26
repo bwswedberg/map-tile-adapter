@@ -95,10 +95,20 @@ export const pixelsToTile = ([px, py]: number[], zoom: number, tileSize: number)
  * @param zoom 
  * @returns
  */
-export const pixelsToRaster = ([px, py]: number[], zoom: number, tileSize: number) => {
-  const mapSize = tileSize << zoom;
-  return [px, mapSize - py];
+export const pixelsToScreenPixels = ([px, py]: number[], zoom: number, tileSize: number) => {
+  return [
+    px, 
+    (tileSize << zoom) - py // transform y origin from bottom to top
+  ];
 }
+
+/**
+ * Move the origin of pixel coordinates from top-left to bottom-left corner
+ * @param xy
+ * @param zoom 
+ * @returns
+ */
+ export const screenPixelsToPixels = pixelsToScreenPixels;
 
 /**
  * 
