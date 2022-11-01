@@ -1,7 +1,7 @@
 import { Bbox, MapTileAdapterContext, Tile } from "src/types";
 import { createCanvasContext } from "src/util/dom";
 
-export const drawDestination = async (
+export const drawDestination = (
   ctx: MapTileAdapterContext,
   source: { canvas: HTMLCanvasElement, translate: number[], zoom: number },
   destination: { tile: Tile, bbox: Bbox },

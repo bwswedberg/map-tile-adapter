@@ -1,4 +1,4 @@
-import { drawSource, drawDestination } from "../draw";
+import { drawTile } from "../draw";
 import { Bbox, MapTileAdapterContext, Tile } from "../types";
 
 interface Props {
@@ -13,32 +13,27 @@ export const loadTile = async ({
   destinationRequest,
   sourceRequests,
   checkCanceled
-}: Props): Promise<{ canvas: HTMLCanvasElement } | null> => {
-  try {
-    // Bail if canceled 
-    if (checkCanceled()) return null;
+}: Props): Promise<{ canvas: HTMLCanvasElement, translate: number[], zoom: number } | null> => {
+  // Bail when already canceled 
+  if (checkCanceled()) return null;
 
-    // Get all source tiles required to reproject
-    const sources = await Promise.all(
-      sourceRequests.map(async source => {
-        const image = await ctx.cache.getTile(source.url);
-        return { ...source, image };
-      })
-    );
+  // Fetch all source tiles required to reproject
+  let sources = await Promise.all(
+    sourceRequests.map(async source => {
+      const image = await ctx.cache.getTile(source.url)
+        .catch(() => null);
+      return { ...source, image };
+    })
+  );
 
-    if (sources.some(d => !d.image)) return null;
+  // Return all sources with an image
+  sources = sources.filter(source => source.image);
 
-    // Bail if canceled or no tiles found
-    if (checkCanceled() || !sources?.length) return null
+  // Validate sources before continue
+  // - Bail when no remaining sources
+  // - Bail when canceled after async source tile fetching
+  if (!sources?.length || checkCanceled()) return null;
 
-    // Create new tile image from source tiles
-    const source = drawSource(ctx, sources);
-
-    return drawDestination(ctx, source, destinationRequest);
-  } catch (err) {
-    const error = err instanceof Error ? err 
-      : typeof err === 'string' ? new Error(err)
-      : new Error(`${err}`);
-    throw error;
-  }
+  // Reproject source tiles to destination tile
+  return drawTile(ctx, sources, destinationRequest);
 }

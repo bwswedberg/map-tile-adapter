@@ -19,9 +19,17 @@
     {
       "files": ["cypress/**"],
       "plugins": ["cypress"],
-      "extends": [ "plugin:cypress/recommended"],
+      "extends": ["plugin:cypress/recommended"],
       "rules": {
         "cypress/globals": true
+      }
+    },
+    {
+      "files": ["playwright/**"],
+      "plugins": ["playwright"],
+      "extends": ["plugin:playwright/playwright-test"],
+      "rules": {
+
       }
     },
     {

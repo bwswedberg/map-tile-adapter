@@ -12,6 +12,7 @@ const loader = (
   cb: ResponseCallback<ArrayBuffer>
 ): Cancelable => {
   const request = parseUrl(reqParams.url);
+  
   const sourceRequests = ctx.destinationTileToSourceTiles({ 
     bbox: request.bbox, 
     tile: request.tile,

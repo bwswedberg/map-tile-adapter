@@ -15,11 +15,15 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      "src/*": ["src/*"]
+    }
   },
   "include": [
     "src/**/*",
-    "cypress/**/*"
+    "cypress/**/*",
+    "index.d.ts"
   ],
   "exclude": [
     "src/**/*.test.ts",
