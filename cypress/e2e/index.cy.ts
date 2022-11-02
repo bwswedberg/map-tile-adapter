@@ -1,5 +1,7 @@
-describe('empty spec', () => {
-  test('passes', () => {
-    cy.visit('https://example.cypress.io');
-  })
+import '../../src';
+
+describe('empty test', () => {
+  it('passes', () => {
+    cy.visit('blank-page');
+  });
 });

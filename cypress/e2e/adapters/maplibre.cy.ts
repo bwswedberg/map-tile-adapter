@@ -1,5 +1,5 @@
 import { epsg4326ToEpsg3857Presets, maplibreTileAdapterProtocol } from 'src';
-import { Bbox, Tile } from 'src/types';
+import { Tile } from 'src/types';
 import trondheim from 'cypress/fixtures/trondheim.json';
 import { addNoCacheInterceptMiddleware, getMaptilerEpsg4326Paths } from 'cypress/support/tiles';
 
@@ -13,8 +13,7 @@ const interceptTileRequest = (tile: Tile) => {
 }
 
 describe('maplibre', () => {
-  const { destination, sources } = trondheim.mappings[1];
-  let sourceRequests: { tile: Tile, bbox: Bbox, url: string }[];
+  const { sources } = trondheim.mappings[1];
 
   beforeEach(() => {
     addNoCacheInterceptMiddleware();
@@ -36,10 +35,12 @@ describe('maplibre', () => {
         interval: [256, 1],
         ...epsg4326ToEpsg3857Presets()
       });
-      (window.maplibregl as any).addProtocol(
+
+      window.maplibregl.default.addProtocol(
         mtaProtocol.protocol, 
         mtaProtocol.loader
       );
+      
       new window.maplibregl.Map({
         container: 'map',
         style: {
@@ -61,7 +62,6 @@ describe('maplibre', () => {
       });
     });
 
-    cy.wait(5000);
-    cy.get('#map').screenshot()
+    cy.get('#map').matchImage();
   });
 });

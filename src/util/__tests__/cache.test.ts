@@ -103,5 +103,5 @@ test('should handle errors when fetching tile', async () => {
 
   const reqPromise = cache.getTile('key-0');
   jest.runOnlyPendingTimers();
-  await expect(reqPromise).rejects.toThrowError(errorMessage);
+  await expect(reqPromise).rejects.toThrow(errorMessage);
 });

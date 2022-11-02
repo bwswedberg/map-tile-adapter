@@ -17,28 +17,16 @@
   ],
   "overrides": [
     {
-      "files": ["cypress/**"],
+      "files": ["cypress/**/*"],
       "plugins": ["cypress"],
       "extends": ["plugin:cypress/recommended"],
-      "rules": {
-        "cypress/globals": true
-      }
-    },
-    {
-      "files": ["playwright/**"],
-      "plugins": ["playwright"],
-      "extends": ["plugin:playwright/playwright-test"],
-      "rules": {
-
-      }
+      "rules": {}
     },
     {
       "files": ["src/**/__tests__/*", "src/**/*.test.ts"],
       "plugins": ["jest"],
       "extends": ["plugin:jest/recommended"],
-      "rules": { 
-        "jest/globals": true
-      }
+      "rules": {}
     }
   ],
   "settings": {
@@ -48,5 +36,6 @@
     "import/resolver": {
       "typescript": {}
     }
-  }
+  },
+  "rules": {}
 }

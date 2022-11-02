@@ -1,5 +1,5 @@
 import { epsg4326ToEpsg3857Presets } from 'src';
-import { Bbox, MapTileAdapterContext, Tile } from 'src/types';
+import { MapTileAdapterContext } from 'src/types';
 import { fetchImage, TileCache } from 'src/util';
 import trondheim from 'cypress/fixtures/trondheim.json';
 import { drawSource } from 'src/draw/source';
@@ -48,8 +48,9 @@ describe('drawSource', () => {
 
       cy.get('body').then(el => {
         el.append(output.canvas);
-        // cy.get('canvas').matchImage(); 
       });
     });
+
+    cy.get('canvas').matchImage();
   });
 });

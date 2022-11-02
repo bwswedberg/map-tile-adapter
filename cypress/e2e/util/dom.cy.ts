@@ -38,7 +38,7 @@ describe('canvasToArrayBuffer', () => {
 describe('fetchImage', () => {
   beforeEach(() => {
     addNoCacheInterceptMiddleware();
-  })
+  });
 
   it('should resolve to html image', () => {
     const { url, fixture } = getMaptilerEpsg4326Paths([0, 0, 1]);
@@ -61,29 +61,29 @@ describe('fetchImage', () => {
 
     cy.wrap(null).then(async () => {
       try {
-        const image = await fetchImage(url);
-        throw new Error('Should have thrown encoding error');
+        await fetchImage(url);
+        assert.fail('Should have thrown encoding error');
       } catch (error) {
         expect(error).to.be.instanceOf(Error);
-        expect((error as any).name).to.equal('EncodingError')
-        expect((error as any).message).to.equal('The source image cannot be decoded.')
+        expect(error instanceof Error ? error.name : null).to.be.equal('EncodingError');
+        expect(error instanceof Error ? error.message : null).to.equal('The source image cannot be decoded.');
       }
     });
   });
 
-  it('should reject when not found', async () => {
+  it('should reject when not found', () => {
     const { url } = getMaptilerEpsg4326Paths([0, 0, 1]);
 
     cy.intercept(url, { statusCode: 404 });
 
     cy.wrap(null).then(async () => {
       try {
-        const image = await fetchImage(url);
-        throw new Error('Should have thrown encoding error');
+        await fetchImage(url);
+        assert.fail('Should have thrown encoding error');
       } catch (error) {
         expect(error).to.be.instanceOf(Error);
-        expect((error as any).name).to.equal('EncodingError')
-        expect((error as any).message).to.equal('The source image cannot be decoded.')
+        expect(error instanceof Error ? error.name : null).to.be.equal('EncodingError');
+        expect(error instanceof Error ? error.message : null).to.equal('The source image cannot be decoded.');
       }
     });
   });

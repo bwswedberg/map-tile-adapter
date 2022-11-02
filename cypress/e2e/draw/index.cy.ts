@@ -1,5 +1,5 @@
 import { epsg4326ToEpsg3857Presets } from 'src';
-import { Bbox, MapTileAdapterContext, Tile } from 'src/types';
+import { MapTileAdapterContext, Tile } from 'src/types';
 import { fetchImage, TileCache } from 'src/util';
 import trondheim from 'cypress/fixtures/trondheim.json';
 import { drawTile } from 'src/draw';
@@ -69,7 +69,9 @@ describe('drawTile', () => {
       cy.get('body').then(el => {
         el.append(output.canvas)
       });
-    })
+    });
+
+    cy.get('canvas').matchImage();
   });
 
   // Slices because we don't have data for that
@@ -108,7 +110,9 @@ describe('drawTile', () => {
         cy.get('body').then(el => {
           el.append(output.canvas)
         });
-      })
+      });
+
+      cy.get('canvas').matchImage();
     });
   });
 
@@ -148,7 +152,9 @@ describe('drawTile', () => {
         cy.get('body').then(el => {
           el.append(output.canvas)
         });
-      })
+      });
+
+      cy.get('canvas').matchImage();
     });
   })
 });

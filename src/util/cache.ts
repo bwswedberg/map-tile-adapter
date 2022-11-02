@@ -5,7 +5,7 @@ interface TileCacheOptions<Item = unknown> {
 
 type TileCacheListener<T = unknown> = (item: T, error?: unknown) => void
 
-interface TileCacheItem<T = any> {
+interface TileCacheItem<T = unknown> {
   error?: string;
   item?: T;
   listeners?: TileCacheListener<T>[];
@@ -62,7 +62,7 @@ export class TileCache<Item = unknown> {
   }
 
   private subscribe(key: string, listener: TileCacheListener<Item | null>) {
-    const cacheItem: TileCacheItem | undefined = this.items[key];
+    const cacheItem: TileCacheItem<Item | null> | undefined = this.items[key];
     if (cacheItem?.item !== undefined) {
       // Hit. Item resolved in cache
       this.touchItem(key);

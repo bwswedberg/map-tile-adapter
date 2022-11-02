@@ -1,7 +1,7 @@
 import { Bbox, Tile } from "src/types";
 
 export const parseUrl = (url: string) => {
-  const [_, reprojParamsStr, ...urlTemplates] = url.split(/:\/\//);
+  const [, reprojParamsStr, ...urlTemplates] = url.split(/:\/\//);
   const urlTemplate = urlTemplates.join('://');
   const reprojParams = new URLSearchParams(reprojParamsStr);
   const tile: Tile = [
@@ -14,7 +14,7 @@ export const parseUrl = (url: string) => {
 };
 
 export const parseUrl2 = (url: string) => {
-  const [_, reprojParamsStr, ...urlTemplates] = url.split(/:\/\//);
+  const [, reprojParamsStr, ...urlTemplates] = url.split(/:\/\//);
   const urlTemplate = urlTemplates.join('://');
   const [xmin, ymin, xmax, ymax, x, y, z] = reprojParamsStr.split(',').map(d => +d);
   return { 
