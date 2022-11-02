@@ -39,13 +39,13 @@ jobs:
         browser: chrome
 
     - name: Upload screenshots
-      uses: actions/upload-artifact@latest
+      uses: actions/upload-artifact@v3
       if: failure()
       with:
           name: cypress-snapshots
           path: |
             cypress/screenshots
-            cypress/**/__image_snapshots__
+            cypress/**/__image_snapshots__/*.actual.png
 
     - name: Build
       run: npm run build
