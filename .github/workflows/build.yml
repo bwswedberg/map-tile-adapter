@@ -37,7 +37,6 @@ jobs:
       with:
         start: npm run cy:ci
         browser: chrome
-        record: true
 
     - name: Build
       run: npm run build
