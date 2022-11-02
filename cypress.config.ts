@@ -17,9 +17,9 @@ export default defineConfig({
     pluginVisualRegressionScreenshotConfig: {
       scale: false,
     },
-    pluginVisualRegressionMaxDiffThreshold: 0.0,
-    pluginVisualRegressionDiffConfig: { 
-      threshold: 0.0,
-    },
+    // pluginVisualRegressionMaxDiffThreshold: 0.0,
+    // pluginVisualRegressionDiffConfig: { 
+    //   threshold: 0.0,
+    // },
   }
 });
