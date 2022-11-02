@@ -13,6 +13,14 @@ export default defineConfig({
   },
   env: {
     // pluginVisualRegressionUpdateImages: true,
-    pluginVisualRegressionDiffConfig: { threshold: 0 }
+    pluginVisualRegressionForceDeviceScaleFactor: false,
+    pluginVisualRegressionScreenshotConfig: {
+      capture: 'viewport',
+      scale: false
+    },
+    pluginVisualRegressionMaxDiffThreshold: 0,
+    pluginVisualRegressionDiffConfig: { 
+      threshold: 0,
+    },
   }
 });

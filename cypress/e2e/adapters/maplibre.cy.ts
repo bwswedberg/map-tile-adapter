@@ -1,6 +1,6 @@
 import { epsg4326ToEpsg3857Presets, maplibreTileAdapterProtocol } from 'src';
 import { Tile } from 'src/types';
-import trondheim from 'cypress/fixtures/trondheim.json';
+import type MaplibreGl from 'maplibre-gl';
 import { addNoCacheInterceptMiddleware, getMaptilerEpsg4326Paths } from 'cypress/support/tiles';
 
 const interceptTileRequest = (tile: Tile) => {
@@ -13,11 +13,8 @@ const interceptTileRequest = (tile: Tile) => {
 }
 
 describe('maplibre', () => {
-  const { sources } = trondheim.mappings[1];
-
   beforeEach(() => {
     addNoCacheInterceptMiddleware();
-    sources.forEach(({ tile }) => interceptTileRequest(tile));
     const z = 2;
     for (let x = 0; x < (2 << z); x++) {
       for (let y = 0; y < (1 << z); y++) {
@@ -36,7 +33,7 @@ describe('maplibre', () => {
         ...epsg4326ToEpsg3857Presets()
       });
 
-      window.maplibregl.default.addProtocol(
+      (window.maplibregl as unknown as typeof MaplibreGl).addProtocol(
         mtaProtocol.protocol, 
         mtaProtocol.loader
       );
@@ -61,6 +58,9 @@ describe('maplibre', () => {
         zoom: 2
       });
     });
+
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(5000); // wait for map to render tiles
 
     cy.get('#map').matchImage();
   });
