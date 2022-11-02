@@ -16,7 +16,6 @@ export default defineConfig({
     pluginVisualRegressionForceDeviceScaleFactor: false,
     pluginVisualRegressionScreenshotConfig: {
       scale: false,
-      capture: 'viewport',
     },
     pluginVisualRegressionMaxDiffThreshold: 0.0,
     pluginVisualRegressionDiffConfig: { 
