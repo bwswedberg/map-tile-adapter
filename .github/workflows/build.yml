@@ -38,7 +38,7 @@ jobs:
         start: npm run cy:ci
         browser: chrome
 
-    - name: Upload screenshots
+    - name: Upload screenshots (On Failure)
       uses: actions/upload-artifact@v3
       if: failure()
       with:

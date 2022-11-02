@@ -16,7 +16,8 @@
     "cy:ci": "start-server-and-test cy:serve 3000 cy:run",
     "cy:dev": "start-server-and-test cy:serve 3000 cy:open",
     "clean": "rm -rf dist",
-    "build": "npm run clean && DOTENV_CONFIG_PATH=./.env.prod NODE_OPTIONS='-r dotenv/config' rollup -c rollup.config.prod.js"
+    "build": "npm run clean && DOTENV_CONFIG_PATH=./.env.prod NODE_OPTIONS='-r dotenv/config' rollup -c rollup.config.prod.js",
+    "prepublishOnly": "npm run lint && npm run test:ci && npm run clean && npm run build"
   },
   "author": "Brian Swedberg",
   "license": "MIT",
