@@ -34,7 +34,7 @@
     "type": "git",
     "url": "https://github.com/bwswedberg/map-tile-adapter"
   },
-  "peerDependencies": { 
+  "peerDependencies": {
     "maplibre-gl": "> 2.0.0"
   },
   "peerDependenciesMeta": {
