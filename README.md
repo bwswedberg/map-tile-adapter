@@ -1,5 +1,5 @@
 # Map Tile Adapter
-Reproject map tiles on the in the browser so that your map can consume map tiles in alternate projections.
+Reproject map tiles in the browser.
 - **Problem:** Your map uses projection X but you've got requirements to show map tiles that are projected in Y.
 - **Solution:** Use `map-tile-adapter` to reproject your map tiles in the browser.
 
@@ -31,5 +31,6 @@ This project is in alpha.
 1. Tag
   - Update the `CHANGELOG.md` with new version.
   - Run `npm version patch` or somethign similar or tag manually
+  - Push tag to remote `git push --tags`
 1. Verify build passes (TODO: pushed tags should do this in github actions)
 1. Publish `npm publish`

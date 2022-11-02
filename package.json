@@ -1,9 +1,20 @@
 {
   "name": "map-tile-adapter",
   "version": "1.0.0-beta.0",
-  "description": "Reproject map tiles on the fly with maplibre, leaflet, or vanilla js",
-  "main": "dist/index.js",
-  "type": "module",
+  "description": "Reproject map tiles on the fly in the browser",
+  "main": "dist/bundle.min.js",
+  "exports": {
+    "node": {
+      "module": "./dist/bundle.js",
+      "require": "./dist/bundle.cjs"
+    },
+    "default": "./dist/bundle.js",
+    "script": "./dist/bundle.min.js"
+  },
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "start": "DOTENV_CONFIG_PATH=./.env.local NODE_OPTIONS='-r dotenv/config' rollup -c rollup.config.dev.js --watch",
     "lint": "eslint src cypress",
@@ -17,10 +28,34 @@
     "cy:dev": "start-server-and-test cy:serve 3000 cy:open",
     "clean": "rm -rf dist",
     "build": "npm run clean && DOTENV_CONFIG_PATH=./.env.prod NODE_OPTIONS='-r dotenv/config' rollup -c rollup.config.prod.js",
-    "prepublishOnly": "npm run lint && npm run test:ci && npm run clean && npm run build"
+    "prepublishOnly": "npm run lint && npm run test:ci && npm run cy:ci && npm run clean && npm run build"
   },
-  "author": "Brian Swedberg",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bwswedberg/map-tile-adapter"
+  },
+  "peerDependencies": { 
+    "maplibre-gl": "> 2.0.0"
+  },
+  "peerDependenciesMeta": {
+    "maplibre-gl": {
+      "optional": true
+    }
+  },
+  "keywords": [
+    "map",
+    "tile",
+    "maplibre-gl",
+    "wgs84",
+    "epsg:4326",
+    "epsg:3857"
+  ],
+  "author": "bwswedberg",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bwswedberg/map-tile-adapter/issues"
+  },
+  "homepage": "https://github.com/bwswedberg/map-tile-adapter",
   "devDependencies": {
     "@babel/core": "^7.19.3",
     "@babel/preset-env": "^7.19.4",
