@@ -4,7 +4,7 @@ Reproject map tiles in the browser.
 - **Solution:** Use `map-tile-adapter` to reproject your map tiles in the browser.
 
 ## WARNING
-This project is in alpha.
+This project is in beta and subject to breaking API changes. Documentation and improved test coverage will be provided in the near future.
 
 ## Usage
 
@@ -28,9 +28,8 @@ This project is in alpha.
 - [A stackoverflow deep dive on reprojecting map tiles in d3 (Andrew Reid)](https://stackoverflow.com/a/56642588)
 
 ## Development
-1. Tag
-  - Update the `CHANGELOG.md` with new version.
-  - Run `npm version patch` or somethign similar or tag manually
-  - Push tag to remote `git push --tags`
+1. Update the `CHANGELOG.md` with new version and commit the change.
+1. Run `npm version patch` or somethign similar or tag manually
+1. Push tag to remote `git push --tags`
 1. Verify build passes (TODO: pushed tags should do this in github actions)
 1. Publish `npm publish`
