@@ -38,6 +38,15 @@ jobs:
         start: npm run cy:ci
         browser: chrome
 
+    - name: Upload screenshots
+      uses: actions/upload-artifact@latest
+      if: failure()
+      with:
+          name: cypress-snapshots
+          path: |
+            cypress/screenshots
+            cypress/**/__image_snapshots__
+
     - name: Build
       run: npm run build
       
