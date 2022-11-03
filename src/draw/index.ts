@@ -1,4 +1,4 @@
-import { Bbox, MapTileAdapterContext, Tile } from 'src/types';
+import type { Bbox, MapTileAdapterContext, Tile } from '../types';
 import { drawDestination } from './destination';
 import { drawSource } from './source';
 

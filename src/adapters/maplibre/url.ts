@@ -1,4 +1,4 @@
-import { Bbox, Tile } from "src/types";
+import type { Bbox, Tile } from "../../types";
 
 export const parseUrl = (url: string) => {
   const [, reprojParamsStr, ...urlTemplates] = url.split(/:\/\//);

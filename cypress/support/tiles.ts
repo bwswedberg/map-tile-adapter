@@ -1,4 +1,4 @@
-import { Tile } from "src/types";
+import type { Tile } from "src/types";
 
 export const MOCK_TILE_SERVER = 'https://tilehost.com';
 

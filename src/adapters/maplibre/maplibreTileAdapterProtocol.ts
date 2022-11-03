@@ -1,5 +1,5 @@
 import type { Cancelable, RequestParameters, ResponseCallback } from "maplibre-gl";
-import { MapTileAdapterContext, MapTileAdapterOptions } from "src/types";
+import type { MapTileAdapterContext, MapTileAdapterOptions } from "src/types";
 import { canvasToArrayBuffer, fetchImage, TileCache } from "src/util";
 import { loadTile } from "../base";
 import { parseUrl, getImageUrl } from "./url";

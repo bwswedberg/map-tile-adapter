@@ -11,19 +11,22 @@
     "module": "ESNext",
     "declaration": true,
     "sourceMap": true,
-    "outDir": "./dist",
+    "outDir": "dist",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
     "baseUrl": ".",
     "paths": {
       "src/*": ["src/*"]
-    }
+    },
+    "plugins": [
+      { "transform": "@zerollup/ts-transform-paths" }
+    ]
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
   ],
   "exclude": [
+    "dist",
     "src/**/*.test.ts",
     "src/**/__tests__/*",
     "node_modules"

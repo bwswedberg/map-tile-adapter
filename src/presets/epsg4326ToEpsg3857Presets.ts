@@ -1,5 +1,5 @@
 import * as tilebelt from 'tilebelt-wgs84';
-import { Bbox, DestinationTileToSourceTilesFn, DestinationToPixelFn, DestinationToSourceFn, PixelToDestinationFn, SourceToPixelFn, Tile } from "../types";
+import type { Bbox, DestinationTileToSourceTilesFn, DestinationToPixelFn, DestinationToSourceFn, PixelToDestinationFn, SourceToPixelFn, Tile } from "../types";
 import { metersToPixels, metersToLngLat, pixelsToMeters, pixelsToScreenPixels, screenPixelsToPixels } from '../proj/epsg3857';
 
 interface PresetOptions {

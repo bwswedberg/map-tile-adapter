@@ -1,5 +1,5 @@
 import { drawTile } from "../draw";
-import { Bbox, MapTileAdapterContext, Tile } from "../types";
+import type { Bbox, MapTileAdapterContext, Tile } from "../types";
 
 interface Props {
   ctx: MapTileAdapterContext;
