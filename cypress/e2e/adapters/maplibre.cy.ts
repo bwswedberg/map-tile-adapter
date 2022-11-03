@@ -14,6 +14,7 @@ const interceptTileRequest = (tile: Tile) => {
 
 describe('maplibre', () => {
   beforeEach(() => {
+    cy.visit('maplibre-page');
     addNoCacheInterceptMiddleware();
     const z = 2;
     for (let x = 0; x < (2 << z); x++) {
@@ -21,7 +22,6 @@ describe('maplibre', () => {
         interceptTileRequest([x, y, z]);
       }
     }
-    cy.visit('maplibre-page');
   });
 
   it('should render maplibre map using epsg:4326 to epsg:3857 adapter', () => {

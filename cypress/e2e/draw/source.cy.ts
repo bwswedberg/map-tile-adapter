@@ -7,8 +7,8 @@ import { addNoCacheInterceptMiddleware, getMaptilerEpsg4326Paths } from 'cypress
 
 describe('drawSource', () => {
   beforeEach(() => {
-    addNoCacheInterceptMiddleware();
     cy.visit('blank-page');
+    addNoCacheInterceptMiddleware();
   });
 
   it('should return source canvas with metadata', () => {

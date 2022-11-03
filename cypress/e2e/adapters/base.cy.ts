@@ -35,13 +35,13 @@ describe('loadTile', () => {
   let sourceRequests: { tile: Tile, bbox: Bbox, url: string }[];
 
   beforeEach(() => {
+    cy.visit('blank-page');
     addNoCacheInterceptMiddleware();
     sources.forEach(({ tile }) => interceptTileRequest(tile));
     sourceRequests = sources.map(({ tile, bbox }) => {
       const { url } = getMaptilerEpsg4326Paths(tile);
       return { tile, bbox, url };
     });
-    cy.visit('blank-page');
   });
 
   it('should return results with using [TileSize, TileSize] interval', () => {

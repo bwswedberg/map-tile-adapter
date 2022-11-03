@@ -32,8 +32,8 @@ const createMapTileAdapterContext = (props: Partial<MapTileAdapterContext> = {})
 
 describe('drawTile', () => {
   beforeEach(() => {
-    addNoCacheInterceptMiddleware();
     cy.visit('blank-page');
+    addNoCacheInterceptMiddleware();
   });
 
   it('should return with simple props', () => {
