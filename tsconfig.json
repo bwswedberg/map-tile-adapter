@@ -17,16 +17,12 @@
     "baseUrl": ".",
     "paths": {
       "src/*": ["src/*"]
-    },
-    "plugins": [
-      { "transform": "@zerollup/ts-transform-paths" }
-    ]
+    }
   },
   "include": [
     "src/**/*",
   ],
   "exclude": [
-    "dist",
     "src/**/*.test.ts",
     "src/**/__tests__/*",
     "node_modules"
