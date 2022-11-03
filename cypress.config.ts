@@ -5,6 +5,7 @@ export default defineConfig({
   viewportHeight: 512,
   viewportWidth: 512,
   video: false,
+  pageLoadTimeout: 120000,
   e2e: {
     setupNodeEvents(on, config) {
       initVisualRegressionPlugin(on, config);
