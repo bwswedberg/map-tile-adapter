@@ -3,11 +3,10 @@
   "version": "1.0.0-beta.2",
   "description": "Reproject map tiles on the fly in the browser",
   "main": "dist/bundle.min.js",
+  "type": "module",
   "exports": {
-    "node": {
-      "module": "./dist/bundle.js",
-      "require": "./dist/bundle.cjs"
-    },
+    "import": "./dist/bundle.js",
+    "require": "./dist/bundle.cjs",
     "default": "./dist/bundle.js",
     "script": "./dist/bundle.min.js"
   },
