@@ -37,6 +37,7 @@ jobs:
         with:
           start: npm run cy:ci
           wait-on: 'http://localhost:3000'
+          wait-on-timeout: 120
           browser: chrome
 
       - name: Upload screenshots (On Failure)
