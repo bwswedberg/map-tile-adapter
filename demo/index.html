@@ -45,8 +45,7 @@
     </div>
     <script defer>
       var mtaProtocol = window.MapTileAdapter.maplibreTileAdapterProtocol({
-        sourceTileSize: 256,
-        destinationTileSize: 256,
+        tileSize: 256,
         interval: [256, 1],
         ...window.MapTileAdapter.epsg4326ToEpsg3857Presets()
       });
@@ -62,7 +61,7 @@
           sources: {
             'basic4326-256-local': {
               type: 'raster',
-              tiles: ['mta://bbox={bbox-epsg-3857}&z={z}&x={x}&y={y}://http://localhost:3000/tiles/epsg4326/{z-source}/{x-source}/{y-source}.png'],
+              tiles: ['mta://bbox={bbox-epsg-3857}&z={z}&x={x}&y={y}://http://localhost:3000/tiles/epsg4326/{sz}/{sx}/{sy}.png'],
               tileSize: 256,
               minzoom: 1,
               maxzoom: 3,
@@ -70,7 +69,7 @@
             },
             'basic4326-256': {
               type: 'raster',
-              tiles: ['mta://bbox={bbox-epsg-3857}&z={z}&x={x}&y={y}://https://api.maptiler.com/maps/basic-4326/256/{z-source}/{x-source}/{y-source}.png?key=bS8WSqUoVgfQRrMrQuvE'],
+              tiles: ['mta://bbox={bbox-epsg-3857}&z={z}&x={x}&y={y}://https://api.maptiler.com/maps/basic-4326/256/{sz}/{sx}/{sy}.png?key=bS8WSqUoVgfQRrMrQuvE'],
               tileSize: 256,
               scheme: 'xyz'
             },

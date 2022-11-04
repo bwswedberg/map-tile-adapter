@@ -1,5 +1,5 @@
 import { defineConfig } from 'cypress';
-import { initPlugin as initVisualRegressionPlugin } from '@frsource/cypress-plugin-visual-regression-diff/dist/plugins';
+import { initPlugin as initVisualRegressionPlugin } from '@frsource/cypress-plugin-visual-regression-diff/plugins';
 
 export default defineConfig({
   viewportHeight: 512,

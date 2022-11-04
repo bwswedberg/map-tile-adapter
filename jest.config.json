@@ -1,4 +1,7 @@
 {
   "testEnvironment": "node",
-  "clearMocks": true
+  "clearMocks": true,
+  "collectCoverageFrom": [
+    "src/**/*.ts"
+  ]
 }

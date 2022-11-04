@@ -2,7 +2,7 @@ import type { Cancelable, RequestParameters, ResponseCallback } from "maplibre-g
 import type { MapTileAdapterContext, MapTileAdapterOptions } from "src/types";
 import { canvasToArrayBuffer, fetchImage, TileCache } from "src/util";
 import { loadTile } from "../base";
-import { parseUrl, getImageUrl } from "./url";
+import { parseCustomProtocolRequestUrl, getImageUrl } from "./url";
 
 const MTA_PROTOCOL = 'mta';
 
@@ -11,9 +11,15 @@ const loader = (
   reqParams: RequestParameters, 
   cb: ResponseCallback<ArrayBuffer>
 ): Cancelable => {
-  const request = parseUrl(reqParams.url);
+  const request = parseCustomProtocolRequestUrl(reqParams.url);
+  const _ctx: MapTileAdapterContext = {
+    ...ctx,
+    sourceTileSize: request.sourceTileSize ?? ctx.sourceTileSize,
+    destinationTileSize: request.destinationTileSize ?? ctx.destinationTileSize,
+    interval: request.interval ?? ctx.interval,
+  };
   
-  const sourceRequests = ctx.destinationTileToSourceTiles({ 
+  const sourceRequests = _ctx.destinationTileToSourceTiles({ 
     bbox: request.bbox, 
     tile: request.tile,
   }).map(d => ({
@@ -24,7 +30,7 @@ const loader = (
   let isCanceled = false;
 
   void loadTile({
-    ctx,
+    ctx: _ctx,
     sourceRequests,
     destinationRequest: { tile: request.tile, bbox: request.bbox },
     checkCanceled: () => isCanceled,
@@ -52,20 +58,20 @@ export const maplibreTileAdapterProtocol = (options: MaplibreTileAdapterOptions)
     fetchTile: url => fetchImage(url),
     maxCache: options.cacheSize ?? 10,
   });
-  const destinationTileSize = options?.destinationTileSize ?? options?.sourceTileSize ?? 256
+  const destinationTileSize = options?.destinationTileSize ?? options?.tileSize ?? 256;
   const ctx: MapTileAdapterContext = { 
     cache,
-    destinationTileSize: options?.destinationTileSize ?? options?.sourceTileSize ?? 256,
+    destinationTileSize,
     destinationTileToSourceTiles: options.destinationTileToSourceTiles,
     destinationToPixel: options.destinationToPixel,
     destinationToSource: options.destinationToSource,
     interval: options?.interval ?? [destinationTileSize, destinationTileSize],
     pixelToDestination: options.pixelToDestination,
-    sourceTileSize: options?.sourceTileSize ?? options?.destinationTileSize ?? 256,
+    sourceTileSize: options?.sourceTileSize ?? destinationTileSize,
     sourceToPixel: options.sourceToPixel,
   };
   return {
-    protocol: `${options?.protocol ?? MTA_PROTOCOL}`, // ://bbox={bbox-epsg-3857}&z={z}&x={x}&y={y}`,
+    protocol: `${options?.protocol ?? MTA_PROTOCOL}`,
     tileUrlPrefix: `${options?.protocol ?? MTA_PROTOCOL}://bbox={bbox-epsg-3857}&z={z}&x={x}&y={y}`,
     loader: loader.bind(null, ctx),
   };

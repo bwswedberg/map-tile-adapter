@@ -45,7 +45,7 @@ describe('maplibre', () => {
           sources: {
             'epsg4326source': {
               type: 'raster',
-              tiles: [`${mtaProtocol.tileUrlPrefix}://https://tilehost.com/{z-source}/{x-source}/{y-source}.png`],
+              tiles: [`${mtaProtocol.tileUrlPrefix}://https://tilehost.com/{sz}/{sx}/{sy}.png`],
               tileSize: 256,
               scheme: 'xyz'
             },

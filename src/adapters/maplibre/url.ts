@@ -1,6 +1,15 @@
 import type { Bbox, Tile } from "../../types";
 
-export const parseUrl = (url: string) => {
+export interface ParseCustomProtocolRequestUrlOutput {
+  bbox: Bbox; 
+  tile: Tile;
+  urlTemplate: string;
+  interval?: number[];
+  sourceTileSize?: number;
+  destinationTileSize?: number;
+}
+
+export const parseCustomProtocolRequestUrl = (url: string): ParseCustomProtocolRequestUrlOutput => {
   const [, reprojParamsStr, ...urlTemplates] = url.split(/:\/\//);
   const urlTemplate = urlTemplates.join('://');
   const reprojParams = new URLSearchParams(reprojParamsStr);
@@ -10,17 +19,17 @@ export const parseUrl = (url: string) => {
     +(reprojParams.get('z') ?? 0),
   ];
   const bbox = (reprojParams.get('bbox') ?? '').split(',').map((d: string) => +d);
-  return { bbox, tile, urlTemplate };
-};
-
-export const parseUrl2 = (url: string) => {
-  const [, reprojParamsStr, ...urlTemplates] = url.split(/:\/\//);
-  const urlTemplate = urlTemplates.join('://');
-  const [xmin, ymin, xmax, ymax, x, y, z] = reprojParamsStr.split(',').map(d => +d);
+  const interval = (reprojParams.get('interval') ?? '').split(',').map((d: string) => +d);
+  const tileSize = +(reprojParams.get('size') ?? 0);
+  const sourceTileSize = +(reprojParams.get('ssize') ?? tileSize);
+  const destinationTileSize = +(reprojParams.get('dsize') ?? tileSize);
   return { 
-    bbox: [xmin, ymin, xmax, ymax], 
-    tile: [x, y, z], 
-    urlTemplate
+    bbox, 
+    tile, 
+    urlTemplate,
+    interval: reprojParams.has('interval') ? interval : undefined,
+    sourceTileSize: reprojParams.has('ssize') || reprojParams.has('size') ? sourceTileSize : undefined,
+    destinationTileSize: reprojParams.has('dsize') || reprojParams.has('size') ? destinationTileSize : undefined,
   };
 };
 
@@ -31,14 +40,14 @@ export const getImageUrl = (
 ) => {
   return (
     urlTemplate
-      .replace('{bbox-source}', `${sourceBbox.join(',')}`)
-      .replace('{xmin-source}', `${sourceBbox[0]}`)
-      .replace('{ymin-source}', `${sourceBbox[1]}`)
-      .replace('{xmax-source}', `${sourceBbox[2]}`)
-      .replace('{ymax-source}', `${sourceBbox[3]}`)
-      .replace('{x-source}', `${sourceTile[0]}`)
-      .replace('{y-source}', `${sourceTile[1]}`)
-      .replace('{z-source}', `${sourceTile[2]}`)
+      .replace('{sbbox}', `${sourceBbox.join(',')}`)
+      .replace('{sxmin}', `${sourceBbox[0]}`)
+      .replace('{symin}', `${sourceBbox[1]}`)
+      .replace('{sxmax}', `${sourceBbox[2]}`)
+      .replace('{symax}', `${sourceBbox[3]}`)
+      .replace('{sx}', `${sourceTile[0]}`)
+      .replace('{sy}', `${sourceTile[1]}`)
+      .replace('{sz}', `${sourceTile[2]}`)
   );
 };
 

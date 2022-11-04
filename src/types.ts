@@ -26,6 +26,7 @@ export interface MapTileAdapterOptions {
   pixelToDestination: PixelToDestinationFn;
   sourceTileSize?: number;
   sourceToPixel: SourceToPixelFn;
+  tileSize?: number;
 }
 
 export type MapTileAdapterContext = {
