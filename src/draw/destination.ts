@@ -1,4 +1,4 @@
-import type { Bbox, MapTileAdapterContext, Tile } from "../types";
+import type { Bbox, MapTileAdapterContext, Tile } from "src/types";
 import { createCanvasContext } from "src/util/dom";
 
 export const drawDestination = (

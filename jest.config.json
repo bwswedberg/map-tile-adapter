@@ -1,7 +1,15 @@
 {
-  "testEnvironment": "node",
+  "testEnvironment": "jsdom",
   "clearMocks": true,
   "collectCoverageFrom": [
     "src/**/*.ts"
-  ]
+  ],
+  "rootDir": ".",
+  "setupFilesAfterEnv": [
+    "<rootDir>/test/setup-tests.ts"
+  ],
+  "moduleNameMapper": {
+    "^src/(.*)": "<rootDir>/src/$1",
+    "^test/(.*)": "<rootDir>/test/$1"
+  }
 }

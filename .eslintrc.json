@@ -23,9 +23,18 @@
       "rules": {}
     },
     {
-      "files": ["src/**/__tests__/*", "src/**/*.test.ts"],
+      "files": ["src/**/*.test.ts"],
       "plugins": ["jest"],
       "extends": ["plugin:jest/recommended"],
+      "rules": {
+        "@typescript-eslint/no-explicit-any": 0,
+        "jest/no-focused-tests": ["warn"]
+      }
+    },
+    {
+      "files": ["src/**/*.e2e.ts"],
+      "plugins": ["playwright"],
+      "extends": ["plugin:playwright/playwright-test"],
       "rules": {}
     }
   ],
