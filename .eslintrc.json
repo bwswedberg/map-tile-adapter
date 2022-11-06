@@ -17,12 +17,6 @@
   ],
   "overrides": [
     {
-      "files": ["cypress/**/*"],
-      "plugins": ["cypress"],
-      "extends": ["plugin:cypress/recommended"],
-      "rules": {}
-    },
-    {
       "files": ["src/**/*.test.ts"],
       "plugins": ["jest"],
       "extends": ["plugin:jest/recommended"],

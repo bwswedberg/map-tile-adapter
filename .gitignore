@@ -3,5 +3,5 @@ node_modules
 dist
 .DS_Store
 demo/tiles
-cypress/screenshots
+test-results
 coverage

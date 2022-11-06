@@ -8,6 +8,9 @@
   "setupFilesAfterEnv": [
     "<rootDir>/test/setup-tests.ts"
   ],
+  "testMatch": [
+    "**/__tests__/**/*.test.ts"
+  ],
   "moduleNameMapper": {
     "^src/(.*)": "<rootDir>/src/$1",
     "^test/(.*)": "<rootDir>/test/$1"
