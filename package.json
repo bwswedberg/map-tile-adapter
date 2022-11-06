@@ -24,7 +24,7 @@
     "e2e:build": "npm run clean && rollup -c rollup.config.e2e.js",
     "e2e:run": "playwright test",
     "e2e:ci": "start-server-and-test e2e:build 3000 e2e:run",
-    "prepublishOnly": "npm run lint && npm run test:ci && npm run cy:ci && npm run clean && npm run build"
+    "prepublishOnly": "npm run lint && npm run test:ci && npm run e2e:ci && npm run clean && npm run build"
   },
   "repository": {
     "type": "git",
