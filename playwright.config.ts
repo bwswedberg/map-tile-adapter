@@ -8,7 +8,7 @@ const config: PlaywrightTestConfig = {
   },
   testMatch: [
     'src/**/*.e2e.ts'
-  ]
+  ],
 };
 
 export default config;
