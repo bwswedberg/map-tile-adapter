@@ -13,7 +13,7 @@ declare global {
 }
 
 test.describe('maplibreTileAdapterProtocol', () => {
-  test('should render a maplibre map', async ({ page }) => {
+  test('should render a maplibre map', async ({ page }, testinfo) => {
     await page.goto('http://localhost:3000/maplibre.html');
 
     await page.evaluate(() => {
@@ -62,6 +62,9 @@ test.describe('maplibreTileAdapterProtocol', () => {
 
     const map = page.locator('#map');
 
+    // By default is `process.platform` which fails when auto naming snapshots on different os
+    // See https://github.com/microsoft/playwright/issues/14218
+    testinfo.snapshotSuffix = ''; 
     expect(await map.screenshot()).toMatchSnapshot();
   });
 
