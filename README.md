@@ -3,6 +3,8 @@ Reproject map tiles in the browser.
 - **Problem:** Your map uses projection X but you've got requirements to show map tiles that are projected in Y.
 - **Solution:** Use `map-tile-adapter` to reproject your map tiles in the browser.
 
+**[DEMO](https://bwswedberg.github.io/map-tile-adapter/)**
+
 ## WARNING
 This project is in beta and subject to breaking API changes. Documentation and improved test coverage will be provided in the near future.
 
