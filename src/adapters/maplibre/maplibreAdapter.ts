@@ -1,41 +1,34 @@
 import type { Cancelable, RequestParameters, ResponseCallback } from "maplibre-gl";
-import type { MapTileAdapterContext, MapTileAdapterOptions } from "src/types";
-import { canvasToArrayBuffer, fetchImage, TileCache } from "src/util";
-import { loadTile } from "../base";
-import { parseCustomProtocolRequestUrl, getImageUrl } from "./url";
+import { MapTileAdapterContext, MapTileAdapterOptions } from "src/types";
+import { canvasToArrayBuffer, createCanvasContext, fetchImage, TileCache } from "src/util";
+import { loadTile } from "../core";
+import { parseCustomProtocolRequestUrl } from "./url";
 
 const MTA_PROTOCOL = 'mta';
 
+type MapTileAdapterBrowserContext = MapTileAdapterContext<CanvasRenderingContext2D, HTMLImageElement>
+
 const loader = (
-  ctx: MapTileAdapterContext, 
+  ctx: MapTileAdapterBrowserContext, 
   reqParams: RequestParameters, 
   cb: ResponseCallback<ArrayBuffer>
 ): Cancelable => {
   const request = parseCustomProtocolRequestUrl(reqParams.url);
-  const _ctx: MapTileAdapterContext = {
+
+  const _ctx: MapTileAdapterBrowserContext = {
     ...ctx,
     sourceTileSize: request.sourceTileSize ?? ctx.sourceTileSize,
     destinationTileSize: request.destinationTileSize ?? ctx.destinationTileSize,
     interval: request.interval ?? ctx.interval,
   };
-  
-  const sourceRequests = _ctx.destinationTileToSourceTiles({ 
-    bbox: request.bbox, 
-    tile: request.tile,
-  }).map(d => ({
-    ...d,
-    url: getImageUrl(request.urlTemplate, d.tile, d.bbox)
-  }));
 
-  let isCanceled = false;
-
-  void loadTile({
+  const { promise, cancel } = loadTile({
     ctx: _ctx,
-    sourceRequests,
+    url: request.urlTemplate,
     destinationRequest: { tile: request.tile, bbox: request.bbox },
-    checkCanceled: () => isCanceled,
-  })
-  .then(async (destination) => {
+  });
+
+  void promise.then(async (destination) => {
     if (!destination) return cb(null, null);
     const img = await canvasToArrayBuffer(destination.canvas);
     cb(null, img);
@@ -44,7 +37,7 @@ const loader = (
 
   return { 
     cancel: () => {
-      isCanceled = true
+      cancel();
     }
   };
 };
@@ -59,7 +52,7 @@ export const maplibreTileAdapterProtocol = (options: MaplibreTileAdapterOptions)
     maxCache: options.cacheSize ?? 10,
   });
   const destinationTileSize = options?.destinationTileSize ?? options?.tileSize ?? 256;
-  const ctx: MapTileAdapterContext = { 
+  const ctx: MapTileAdapterBrowserContext = { 
     cache,
     destinationTileSize,
     destinationTileToSourceTiles: options.destinationTileToSourceTiles,
@@ -69,10 +62,13 @@ export const maplibreTileAdapterProtocol = (options: MaplibreTileAdapterOptions)
     pixelToDestination: options.pixelToDestination,
     sourceTileSize: options?.sourceTileSize ?? destinationTileSize,
     sourceToPixel: options.sourceToPixel,
+    createCanvasRenderingContext2D: (width: number, height: number) => {
+      return createCanvasContext(width, height);
+    }
   };
   return {
     protocol: `${options?.protocol ?? MTA_PROTOCOL}`,
     tileUrlPrefix: `${options?.protocol ?? MTA_PROTOCOL}://bbox={bbox-epsg-3857}&z={z}&x={x}&y={y}`,
-    loader: loader.bind(null, ctx),
+    loader: (req: RequestParameters, cb: ResponseCallback<ArrayBuffer>): Cancelable => loader(ctx, req, cb),
   };
 }

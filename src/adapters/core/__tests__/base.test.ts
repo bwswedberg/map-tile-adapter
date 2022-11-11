@@ -4,7 +4,7 @@ import trondheim from 'test/assets/trondheim.json';
 import { Tile, Bbox, MapTileAdapterContext } from "src/types";
 import { TileCache } from "src/util";
 import { epsg4326ToEpsg3857Presets } from "src/presets";
-import { loadTile } from "../base";
+import { loadTile } from "../coreAdapter";
 
 jest.mock('src/util/dom');
 

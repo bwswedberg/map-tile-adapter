@@ -29,8 +29,14 @@ export interface MapTileAdapterOptions {
   tileSize?: number;
 }
 
-export type MapTileAdapterContext = {
-  cache: TileCache<HTMLImageElement | null>;
+export type AbstrctCanvasRenderingContext2D = {
+  canvas: any;
+  drawImage(source: any, sx: number, sy: number): void;
+  drawImage(source: any, sx: number, sy: number, sw: number, sh: number, dx: number, dy: number, dw: number, dh: number): void;
+}
+
+export interface MapTileAdapterContext<TContext extends AbstrctCanvasRenderingContext2D = AbstrctCanvasRenderingContext2D, TImage = any> {
+  cache: TileCache<TImage | null>;
   destinationTileSize: number;
   destinationTileToSourceTiles: DestinationTileToSourceTilesFn;
   destinationToPixel: DestinationToPixelFn;
@@ -39,4 +45,5 @@ export type MapTileAdapterContext = {
   pixelToDestination: PixelToDestinationFn;
   sourceTileSize: number;
   sourceToPixel: SourceToPixelFn;
-};
+  createCanvasRenderingContext2D: (width: number, height: number) => TContext
+}

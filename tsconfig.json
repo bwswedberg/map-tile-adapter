@@ -10,6 +10,7 @@
     "moduleResolution": "Node",
     "module": "ESNext",
     "declaration": true,
+    "declarationMap": true,
     "sourceMap": true,
     "outDir": "dist",
     "resolveJsonModule": true,

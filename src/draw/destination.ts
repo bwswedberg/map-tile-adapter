@@ -1,9 +1,8 @@
-import type { Bbox, MapTileAdapterContext, Tile } from "src/types";
-import { createCanvasContext } from "src/util/dom";
+import { AbstrctCanvasRenderingContext2D, Bbox, MapTileAdapterContext, Tile } from "src/types";
 
-export const drawDestination = (
-  ctx: MapTileAdapterContext,
-  source: { canvas: HTMLCanvasElement, translate: number[], zoom: number },
+export const drawDestination = <TContext extends AbstrctCanvasRenderingContext2D, TImage = any>(
+  ctx: MapTileAdapterContext<TContext, TImage>,
+  source: { canvas: TContext['canvas'], translate: number[], zoom: number },
   destination: { tile: Tile, bbox: Bbox },
 ) => {
   const { 
@@ -16,7 +15,7 @@ export const drawDestination = (
     destinationToPixel
   } = ctx;
 
-  const destinationCanvasCtx = createCanvasContext(destinationTileSize, destinationTileSize);
+  const destinationCanvasCtx = ctx.createCanvasRenderingContext2D(destinationTileSize, destinationTileSize);
 
   const destinationZoom = destination.tile[2];
 
@@ -61,6 +60,7 @@ export const drawDestination = (
         source.zoom,
         sourceTileSize
       );
+
       const sp1 = sourceToPixel(
         destinationToSource(
           pixelToDestination(

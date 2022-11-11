@@ -46,7 +46,7 @@
     <script defer>
       var mtaProtocol = window.MapTileAdapter.maplibreTileAdapterProtocol({
         tileSize: 256,
-        interval: [256, 1],
+        interval: [256, 2],
         ...window.MapTileAdapter.epsg4326ToEpsg3857Presets()
       });
       maplibregl.addProtocol(
@@ -59,14 +59,6 @@
         style: {
           version: 8,
           sources: {
-            'basic4326-256-local': {
-              type: 'raster',
-              tiles: ['mta://bbox={bbox-epsg-3857}&z={z}&x={x}&y={y}://http://localhost:3000/tiles/epsg4326/{sz}/{sx}/{sy}.png'],
-              tileSize: 256,
-              minzoom: 1,
-              maxzoom: 3,
-              scheme: 'xyz'
-            },
             'basic4326-256': {
               type: 'raster',
               tiles: ['mta://bbox={bbox-epsg-3857}&z={z}&x={x}&y={y}://https://api.maptiler.com/maps/basic-4326/256/{sz}/{sx}/{sy}.png?key=bS8WSqUoVgfQRrMrQuvE'],

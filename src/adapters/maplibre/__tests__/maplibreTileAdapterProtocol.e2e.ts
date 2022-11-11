@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { maplibreTileAdapterProtocol } from '../maplibreTileAdapterProtocol';
+import { maplibreTileAdapterProtocol } from '../maplibreAdapter';
 import { epsg4326ToEpsg3857Presets } from 'src/presets';
 import maplibreGl from 'maplibre-gl';
 
