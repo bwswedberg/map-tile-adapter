@@ -4,14 +4,12 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Map Tile Adapter"
-    />
-    <title>Map Tile Adapter</title>
-    <link href='https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.css' rel='stylesheet' />
-    <script src='https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.js'></script>
-    <script src="http://localhost:3000/bundle.min.js"></script>
+    <meta name="description" content="Map Tile Adapter" />
+    <title>Map Tile Adapter - Maplibre</title>
+    <link href="./maplibre-gl/dist/maplibre-gl.css" rel="stylesheet" />
+    <script src="./maplibre-gl/dist/maplibre-gl.js"></script>
+    <script src="./presets/map-tile-adapter-presets.min.js"></script>
+    <script src="./maplibre/map-tile-adapter.min.js"></script>
     <style>
       body {
         margin: 0;
@@ -47,7 +45,7 @@
       var mtaProtocol = window.MapTileAdapter.maplibreTileAdapterProtocol({
         tileSize: 256,
         interval: [256, 1],
-        ...window.MapTileAdapter.epsg4326ToEpsg3857Presets()
+        ...window.MapTileAdapterPresets.epsg4326ToEpsg3857Presets()
       });
       maplibregl.addProtocol(
         mtaProtocol.protocol, 
@@ -85,7 +83,7 @@
             },
           ]
         },
-        center: [0, 45],
+        center: [0, 45], // [lng, lat]
         zoom: 3
       });
 

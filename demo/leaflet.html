@@ -4,14 +4,12 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Map Tile Adapter - Leaflet"
-    />
+    <meta name="description" content="Map Tile Adapter - Leaflet" />
     <title>Map Tile Adapter - Leaflet</title>
     <link href="./leaflet/dist/leaflet.css" rel="stylesheet" />
     <script src="./leaflet/dist/leaflet.js"></script>
-    <script src="./bundle.min.js"></script>
+    <script src="./presets/map-tile-adapter-presets.min.js"></script>
+    <script src="./leaflet/map-tile-adapter.min.js"></script>
     <style>
       body {
         margin: 0;
@@ -45,7 +43,7 @@
     </div>
     <script defer>
       var map = new L.map('map', {
-        center: [0, 45],
+        center: [45, 0], // [lat, lng]
         zoom: 3,
       });
 
@@ -55,7 +53,7 @@
       }).addTo(map);
 
       const mtaLayer = L.mtaLayer({ 
-        ...window.MapTileAdapter.epsg4326ToEpsg3857Presets(),
+        ...window.MapTileAdapterPresets.epsg4326ToEpsg3857Presets(),
         tileSize: 256,
         interval: [256, 1],
         url: 'https://api.maptiler.com/maps/basic-4326/256/{sz}/{sx}/{sy}.png?key=bS8WSqUoVgfQRrMrQuvE'
