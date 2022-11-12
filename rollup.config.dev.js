@@ -16,7 +16,7 @@ export default {
     nodeResolve(), 
     commonjs(),
     serve({
-      contentBase: ['demo', 'dist'],
+      contentBase: ['demo', 'dist', 'node_modules'],
       port: 3000
     })
   ],

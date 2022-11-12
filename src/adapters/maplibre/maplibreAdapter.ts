@@ -1,8 +1,8 @@
 import type { Cancelable, RequestParameters, ResponseCallback } from "maplibre-gl";
 import type { MapTileAdapterContext, MapTileAdapterOptions } from "src/types";
 import { canvasToArrayBuffer, fetchImage, TileCache } from "src/util";
-import { loadTile } from "../base";
-import { parseCustomProtocolRequestUrl, getImageUrl } from "./url";
+import { loadTile } from "../core/coreAdapter";
+import { parseCustomProtocolRequestUrl } from "./url";
 
 const MTA_PROTOCOL = 'mta';
 
@@ -18,20 +18,12 @@ const loader = (
     destinationTileSize: request.destinationTileSize ?? ctx.destinationTileSize,
     interval: request.interval ?? ctx.interval,
   };
-  
-  const sourceRequests = _ctx.destinationTileToSourceTiles({ 
-    bbox: request.bbox, 
-    tile: request.tile,
-  }).map(d => ({
-    ...d,
-    url: getImageUrl(request.urlTemplate, d.tile, d.bbox)
-  }));
 
   let isCanceled = false;
 
   void loadTile({
     ctx: _ctx,
-    sourceRequests,
+    url: request.urlTemplate,
     destinationRequest: { tile: request.tile, bbox: request.bbox },
     checkCanceled: () => isCanceled,
   })
